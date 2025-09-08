@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>收藏夹记事本</title>
+    <link rel="stylesheet" href="colors.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>收藏夹记事本</h1>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="search-container small-search">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="搜索收藏..."
+            class="search-input"
+          />
+          <button id="clearSearch" class="clear-search-btn">×</button>
+        </div>
+        <button
+          id="addBtn"
+          style="background: none; border: none; cursor: pointer; font-size: 1.5rem"
+        >
+          ➕
+        </button>
+        <button
+          id="settingsBtn"
+          style="background: none; border: none; cursor: pointer; font-size: 1.5rem"
+        >
+          ⚙️
+        </button>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="tabs">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="downloading">
+            下载<span class="tab-count">(0)</span>
+          </button>
+          <button class="tab-btn" data-tab="downloaded">
+            已下载<span class="tab-count">(0)</span>
+          </button>
+        </div>
+        <div class="tab-content active" id="downloadingList"></div>
+        <div class="tab-content" id="downloadedList"></div>
+      </div>
+    </div>
+    <div class="settings-view" id="settingsView">
+      <div class="container">
+        <button class="back-btn" id="backBtn">← 返回</button>
+        <h2>设置</h2>
+        <div class="settings-content">
+          <!-- 用户管理卡片 -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3>用户管理</h3>
+            </div>
+            <div class="settings-card-content">
+              <div class="settings-item">
+                <label class="settings-label">当前用户:</label>
+                <div class="user-selection" id="userSelection">
+                  <select id="userSelect" style="display: none;
+                    background-color: var(--card-color);
+                    color: var(--text-color);
+                    padding: 8px 12px;
+                    border: 1px solid var(--border-color);
+                    border-radius: 6px;
+                    font-size: 14px;
+                  ">
+                    <option value="default">默认用户</option>
+                  </select>
+                  <div id="currentUserDisplay" style="
+                    display: flex;
+                    align-items: center;
+                    min-height: 36px;
+                  ">用户名：加载中...</div>
+                  <button
+                    id="switchUserBtn"
+                    style="display: none; margin-left: 10px;
+                      background-color: var(--primary-color);
+                      color: white;
+                      border: none;
+                      padding: 6px 12px;
+                      border-radius: 6px;
+                      cursor: pointer;
+                      font-size: 14px;
+                    "
+                  >
+                    切换用户
+                  </button>
+                </div>
+              </div>
+              
+              <div class="settings-item">
+                <label class="settings-label">管理用户:</label>
+                <div class="user-management" style="display: flex; gap: 10px;">
+                  <button id="addUserBtn" style="
+                    background-color: var(--accent-color);
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background-color 0.3s ease;
+                  ">添加用户</button>
+                  <button
+                    id="removeUserBtn"
+                    style="margin-left: 0;
+                      background-color: var(--error-color);
+                      color: white;
+                      border: none;
+                      padding: 8px 16px;
+                      border-radius: 6px;
+                      cursor: pointer;
+                      font-size: 14px;
+                      transition: background-color 0.3s ease;
+                    "
+                  >
+                    移除用户
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 用户管理脚本 -->
+          <script>
+            // 用户管理功能实现
+            document.addEventListener("DOMContentLoaded", function () {
+              // 确保ipcRenderer可用
+              const { ipcRenderer } = require("electron");
+              const userSelect = document.getElementById("userSelect");
+              const currentUserDisplay = document.getElementById(
+                "currentUserDisplay"
+              );
+              const switchUserBtn = document.getElementById("switchUserBtn");
+              const addUserBtn = document.getElementById("addUserBtn");
+              const removeUserBtn = document.getElementById("removeUserBtn");
+
+              // 初始化用户数据
+              let users = ["默认用户"];
+              let currentUser = "默认用户";
+
+              // 请求获取当前用户
+              function getCurrentUser() {
+                ipcRenderer.send("get-current-user");
+              }
+
+              // 接收当前用户响应
+              ipcRenderer.on("current-user-response", (event, user) => {
+                if (user) {
+                  currentUser = user;
+                  // 已获取当前用户
+                  // 如果用户数据已经加载，则更新显示
+                  if (users.length > 0) {
+                    updateUserDisplay();
+                  }
+                }
+              });
+
+              // 接收从主进程发送的用户数据
+              ipcRenderer.on("users-data", (event, receivedUsers) => {
+                if (
+                  receivedUsers &&
+                  Array.isArray(receivedUsers) &&
+                  receivedUsers.length > 0
+                ) {
+                  users = receivedUsers;
+                  // 确保当前用户存在于用户列表中
+                  if (!users.includes(currentUser)) {
+                    currentUser = users[0];
+                  }
+                  updateUserDisplay();
+                  // 已接收并更新用户数据
+                }
+              });
+
+              // 初始化时获取当前用户
+              getCurrentUser();
+
+              // 更新用户显示
+              function updateUserDisplay() {
+                if (users.length > 1) {
+                  // 多用户模式
+                  userSelect.style.display = "inline-block";
+                  switchUserBtn.style.display = "inline-block";
+                  currentUserDisplay.style.display = "none";
+                  userSelect.innerHTML = "";
+                  // 确保默认用户始终在第一位
+                  const sortedUsers = [...users];
+                  const defaultUserIndex = sortedUsers.indexOf("默认用户");
+                  if (defaultUserIndex > -1) {
+                    // 移除默认用户并添加到数组开头
+                    sortedUsers.splice(defaultUserIndex, 1);
+                    sortedUsers.unshift("默认用户");
+                  }
+
+                  sortedUsers.forEach((user) => {
+                    const option = document.createElement("option");
+                    option.value = user;
+                    option.textContent = user;
+                    if (user === currentUser) option.selected = true;
+                    userSelect.appendChild(option);
+                  });
+                } else {
+                  // 单用户模式
+                  userSelect.style.display = "none";
+                  switchUserBtn.style.display = "none";
+                  currentUserDisplay.style.display = "block";
+                  currentUserDisplay.textContent = `用户名：${currentUser}`;
+                }
+              }
+
+              // 切换用户
+              switchUserBtn.addEventListener("click", function () {
+                currentUser = userSelect.value;
+                // 这里应该保存当前用户选择
+                currentUserDisplay.textContent = `用户名：${currentUser}`;
+                updateUserDisplay();
+                // 发送IPC消息通知主进程切换用户
+                ipcRenderer.send("switch-user", currentUser);
+              });
+
+              // 添加用户
+              addUserBtn.addEventListener("click", function () {
+                // 使用自定义对话框添加用户
+                ipcRenderer.send("open-username-dialog");
+              });
+
+              // 监听用户名确认事件
+              ipcRenderer.on("username-confirmed", (event, username) => {
+                if (username && username.trim() && !users.includes(username.trim())) {
+                  const trimmedUsername = username.trim();
+                  users.push(trimmedUsername);
+                  currentUser = trimmedUsername;
+                  updateUserDisplay();
+                  // 发送IPC消息通知主进程添加用户并保存
+                  ipcRenderer.send("add-user", trimmedUsername);
+                } else if (username && users.includes(username.trim())) {
+                  alert("该用户名已存在，请使用其他用户名");
+                }
+              });
+
+              // 增强移除用户功能，添加确认提示并确保移除后切换到默认用户
+              removeUserBtn.addEventListener("click", function () {
+                if (users.length <= 1) {
+                  alert("至少保留一个用户");
+                  return;
+                }
+                const userToRemove = userSelect.value;
+                if (userToRemove === "默认用户") {
+                  alert("不能移除默认用户");
+                  return;
+                }
+                // 弹出确认提示
+                if (
+                  !confirm(
+                    `确定要删除用户"${userToRemove}"及其实时数据吗？`
+                  )
+                ) {
+                  return;
+                }
+                // 发送IPC消息通知主进程移除用户并保存
+                // 使用invoke替代send以支持异步结果返回
+                ipcRenderer
+                  .invoke("remove-user", userToRemove)
+                  .then((success) => {
+                    if (success) {
+                      users = users.filter((user) => user !== userToRemove);
+                      // 移除用户后，将当前用户设置为默认用户
+                      const defaultUserIndex = users.indexOf("默认用户");
+                      currentUser =
+                        defaultUserIndex > -1
+                          ? "默认用户"
+                          : users[0];
+                      updateUserDisplay();
+                    } else {
+                      alert("移除用户失败，请重试");
+                    }
+                  });
+              });
+
+              // 初始化
+              updateUserDisplay();
+            });
+          </script>
+
+          <!-- 界面设置卡片 -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3>界面设置</h3>
+            </div>
+            <div class="settings-card-content">
+              <div class="settings-item">
+                <label class="settings-label" for="windowMode">启动窗口模式:</label>
+                <select id="windowMode" style="
+                  width: 100%;
+                  max-width: 200px;
+                  background-color: var(--card-color);
+                  color: var(--text-color);
+                  padding: 8px 12px;
+                  border: 1px solid var(--border-color);
+                  border-radius: 6px;
+                  font-size: 14px;
+                ">
+                  <option value="normal">窗口模式</option>
+                  <option value="maximized">最大化模式</option>
+                </select>
+              </div>
+
+              <div class="settings-item">
+                <label class="settings-label">主题选择</label>
+                <div class="theme-selector" style="
+                  display: flex;
+                  gap: 12px;
+                  flex-wrap: wrap;
+                  padding: 10px 0;
+                ">
+                  <div
+                    class="theme-option"
+                    data-theme="default"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                      border: 2px solid transparent;
+                      background-color: #2563eb;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    
+                    ">
+                  </div>
+                  <div
+                    class="theme-option"
+                    data-theme="dark"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                      border: 2px solid transparent;
+                      background-color: #0f172a;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    
+                    ">
+                  </div>
+                  <div
+                    class="theme-option"
+                    data-theme="blue"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                      border: 2px solid transparent;
+                      background-color: #1e40af;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    
+                    ">
+                  </div>
+                  <div
+                    class="theme-option"
+                    data-theme="green"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                      border: 2px solid transparent;
+                      background-color: #059669;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    
+                    ">
+                  </div>
+                  <div
+                    class="theme-option"
+                    data-theme="purple"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                      border: 2px solid transparent;
+                      background-color: #6b21a8;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    
+                    ">
+                  </div>
+                  <div
+                    class="theme-option"
+                    data-theme="orange"
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                      border: 2px solid transparent;
+                      background-color: #c2410c;
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    
+                    ">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 界面设置脚本 -->
+          <script>
+            // 主题选择设置 - 确保DOM加载完成后执行
+            document.addEventListener("DOMContentLoaded", function () {
+              // 窗口模式设置
+              const windowModeSelect = document.getElementById("windowMode");
+
+              // 从主进程获取窗口模式设置
+              ipcRenderer.send("get-window-mode");
+              ipcRenderer.on("window-mode-response", (event, mode) => {
+                windowModeSelect.value = mode || "normal";
+              });
+
+              windowModeSelect.addEventListener("change", (e) => {
+                const newMode = e.target.value;
+                // 确保ipcRenderer可用
+                if (typeof ipcRenderer !== "undefined") {
+                  ipcRenderer.send("update-window-mode", newMode);
+                }
+              });
+
+              // 主题选择设置
+              // 简化选择器以确保能正确获取所有主题选项
+              // 获取所有主题选项
+              const themeOptions = document.querySelectorAll(".theme-option");
+
+              // 获取保存的主题
+              const savedTheme = localStorage.getItem("theme") || "default";
+
+              // 应用保存的主题
+              function applyTheme(theme) {
+                if (theme === "default") {
+                  document.documentElement.removeAttribute("data-theme");
+                } else {
+                  document.documentElement.setAttribute("data-theme", theme);
+                }
+                // 更新选中状态
+                if (themeOptions && themeOptions.length > 0) {
+                  themeOptions.forEach((option) => {
+                    option.classList.toggle(
+                      "active",
+                      option.dataset.theme === theme
+                    );
+                    // 添加选中动画效果
+                    if (option.classList.contains('active')) {
+                      option.style.transform = 'scale(1.1)';
+                      option.style.boxShadow = `0 0 0 3px var(--card-color), 0 0 0 5px var(--primary-color)`;
+                    } else {
+                      option.style.transform = 'scale(1)';
+                      option.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                    }
+                  });
+                }
+              }
+
+              // 初始化主题
+              applyTheme(savedTheme);
+
+              document.body.addEventListener("click", (e) => {
+                // 基于data-theme属性触发，不依赖类名
+                if (e.target.dataset.theme) {
+                  const theme = e.target.dataset.theme;
+                  if (theme) {
+                    localStorage.setItem("theme", theme);
+                    applyTheme(theme);
+                    // 显示临时通知
+                    const notification = document.createElement("div");
+                    notification.textContent = `已切换至${theme}主题`;
+                    notification.style.position = "fixed";
+                    notification.style.top = "20px";
+                    notification.style.left = "50%";
+                    notification.style.transform = "translateX(-50%)";
+                    notification.style.padding = "10px 20px";
+                    notification.style.backgroundColor = "rgba(0,0,0,0.8)";
+                    notification.style.color = "white";
+                    notification.style.borderRadius = "5px";
+                    notification.style.zIndex = "9999";
+                    document.body.appendChild(notification);
+                    setTimeout(() => notification.remove(), 2000);
+                  }
+                }
+              });
+            });
+          </script>
+
+          <!-- 数据管理卡片 -->
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h3>数据管理</h3>
+            </div>
+            <div class="settings-card-content">
+              <p style="
+                margin-bottom: 20px;
+                color: var(--text-color);
+                line-height: 1.6;
+              ">
+                通过导入/导出功能，您可以备份收藏数据或与其他浏览器收藏夹进行同步。
+              </p>
+              <div style="
+                display: flex;
+                gap: 15px;
+                margin-bottom: 15px;
+                flex-wrap: wrap;
+              ">
+                <button id="importBtn" style="
+                  background-color: var(--primary-color);
+                  color: white;
+                  border: none;
+                  padding: 10px 20px;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  font-size: 14px;
+                  font-weight: 500;
+                  transition: all 0.3s ease;
+                  min-width: 120px;
+                ">导入收藏夹</button>
+                <button id="exportBtn" style="
+                  background-color: var(--accent-color);
+                  color: white;
+                  border: none;
+                  padding: 10px 20px;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  font-size: 14px;
+                  font-weight: 500;
+                  transition: all 0.3s ease;
+                  min-width: 120px;
+                ">导出收藏夹</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 数据管理脚本 -->
+          <script>
+            // 导入按钮点击事件
+            document.getElementById("importBtn").addEventListener("click", () => {
+              ipcRenderer.send("import-favorites");
+            });
+
+            // 导出按钮点击事件
+            document.getElementById("exportBtn").addEventListener("click", () => {
+              ipcRenderer.send("export-favorites");
+            });
+          </script>
+
+          <!-- 导入导出功能通知组件 -->
+          <div
+            id="importExportNotification"
+            style="
+              display: none;
+              position: fixed;
+              top: 20px;
+              left: 50%;
+              transform: translateX(-50%);
+              padding: 12px 24px;
+              border-radius: 8px;
+              z-index: 9999;
+              color: white;
+              font-weight: bold;
+              background-color: var(--primary-color);
+              box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+              animation: slideIn 0.3s ease-out;
+            "
+          ></div>
+          
+          <style>
+            /* 卡片样式 */
+            .settings-card {
+              background-color: var(--card-color);
+              border-radius: 12px;
+              margin-bottom: 24px;
+              overflow: hidden;
+              box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+              border: 1px solid var(--border-color);
+              transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .settings-card:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            }
+            
+            .settings-card-header {
+              background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1) 0%, rgba(var(--primary-rgb), 0.05) 100%);
+              padding: 16px 20px;
+              border-bottom: 1px solid var(--border-color);
+            }
+            
+            .settings-card-header h3 {
+              margin: 0;
+              color: var(--primary-color);
+              font-size: 18px;
+              font-weight: 600;
+            }
+            
+            .settings-card-content {
+              padding: 20px;
+            }
+            
+            .settings-item {
+              margin-bottom: 20px;
+            }
+            
+            .settings-item:last-child {
+              margin-bottom: 0;
+            }
+            
+            .settings-label {
+              display: block;
+              margin-bottom: 8px;
+              color: var(--text-color);
+              font-weight: 500;
+              font-size: 14px;
+            }
+            
+            /* 按钮悬停效果 */
+            button:hover {
+              filter: brightness(1.05);
+            }
+            
+            button:active {
+              transform: scale(0.98);
+            }
+            
+            /* 通知动画 */
+            @keyframes slideIn {
+              from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+              }
+            }
+          </style>
+
+          <!-- 支持与捐赠 -->
+          <div class="settings-item" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 15px; color: var(--primary-color); font-size: 1.2rem; font-weight: 600;">支持与捐赠</h3>
+            <div class="donation-section" style="
+              background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(var(--primary-rgb), 0.1) 100%);
+              border: 2px solid rgba(var(--primary-rgb), 0.2);
+              border-radius: 12px;
+              padding: 20px;
+              box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.1);
+            ">
+              <p style="margin-bottom: 15px; font-size: 1rem; line-height: 1.6; color: var(--text-color);">
+                收藏夹记事本是一款完全免费的开源软件，我们致力于为用户提供最好的收藏管理体验。
+              </p>
+              <p style="margin-bottom: 20px; font-size: 1rem; line-height: 1.6; color: var(--text-color);">
+                <strong style="color: var(--primary-color);">如果您觉得这款软件对您有所帮助，并且经济条件允许，欢迎通过以下方式支持开发者，您的每一份支持都是我们继续开发和改进的动力！</strong>
+              </p>
+
+              <div style="text-align: center; margin: 30px 0; background-color: var(--card-color); padding: 20px; border-radius: 8px; border: 1px dashed var(--accent-color);">
+                <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--accent-color); font-size: 1.1rem;">
+                  💖 支持项目发展 💖
+                </h4>
+                <p style="margin-bottom: 20px; font-size: 1rem;">
+                  您可以访问我们的 GitHub 项目主页，了解更多捐赠方式和项目信息：
+                </p>
+                <button id="githubBtn" style="
+                  padding: 12px 24px;
+                  background-color: var(--accent-color);
+                  color: white;
+                  border: none;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  transition: all 0.3s ease;
+                  min-width: 180px;
+                ">
+                  访问 GitHub 项目
+                </button>
+              </div>
+
+              <div style="background-color: rgba(var(--primary-rgb), 0.1); border-left: 4px solid var(--primary-color); padding: 15px; border-radius: 0 6px 6px 0; margin-top: 20px;">
+                <p style="margin-bottom: 10px; font-size: 0.95rem;">
+                  我们的所有捐赠方式都已整合到 GitHub 项目页面中。如果您想支持我们的开发工作，
+                  请通过上方按钮访问 GitHub 项目主页，在那里您可以找到包括支付宝在内的多种捐赠方式。
+                </p>
+                <p style="text-align: center; margin-top: 15px; font-weight: 500; color: var(--primary-color);">
+                  感谢您的支持，您的每一份鼓励都是我们前进的动力！
+                </p>
+              </div>
+            </div>
+          </div>
+          <script>
+            // GitHub按钮点击事件
+            document.getElementById("githubBtn").addEventListener("click", () => {
+              // 使用系统默认浏览器打开GitHub项目页面
+              ipcRenderer.send(
+                "open-external-browser",
+                "https://github.com/samson7s/favorites-browser"
+              );
+            });
+          </script>
+          <div class="settings-item">
+            <button id="aboutBtn" class="save-btn">关于开发者</button>
+            <script>
+              document.getElementById("aboutBtn").addEventListener("click", () => {
+                ipcRenderer.send("open-about-window");
+              });
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const { ipcRenderer } = require("electron");
+
+      // 设置视图控制
+      const settingsBtn = document.getElementById("settingsBtn");
+      const backBtn = document.getElementById("backBtn");
+      const settingsView = document.getElementById("settingsView");
+      const mainContent = document.querySelector(".main-content");
+      const header = document.querySelector(".header");
+
+      settingsBtn.addEventListener("click", () => {
+        settingsView.style.display = "block";
+        header.style.display = "none";
+        mainContent.style.display = "none";
+      });
+
+      backBtn.addEventListener("click", () => {
+        settingsView.style.display = "none";
+        header.style.display = "flex";
+        mainContent.style.display = "block";
+      });
+
+      // 添加收藏（通过IPC发送到主进程）
+      function addFavorite(title, url) {
+        const finalTitle = title ? title : url;
+        ipcRenderer.send("add-favorite", { title: finalTitle, url });
+      }
+
+      // 删除收藏项（通过IPC发送到主进程）
+      // 创建操作菜单控件的工厂函数
+      function createActionMenu(items) {
+        // 创建主容器
+        const container = document.createElement("div");
+        container.className = "ActionMenu";
+
+        // 创建按钮
+        const button = document.createElement("button");
+        button.className = "btn ActionMenu-button";
+        button.style.marginLeft = "8px";
+        button.style.height = "32px";
+        button.style.fontSize = "14px";
+        button.innerHTML = '操作 <span class="ActionMenu-caret"></span>';
+        container.appendChild(button);
+
+        // 创建下拉菜单
+        const dropdown = document.createElement("div");
+        dropdown.className = "ActionMenu-dropdown";
+        dropdown.style.display = "none";
+        document.body.appendChild(dropdown);
+
+        // 添加菜单项
+        items.forEach((item, index) => {
+          // 添加分隔线（非第一项前）
+          if (index > 0) {
+            const separator = document.createElement("div");
+            separator.className = "ActionMenu-separator";
+            dropdown.appendChild(separator);
+          }
+
+          const menuItem = document.createElement("button");
+          menuItem.className = "ActionMenu-item";
+          menuItem.textContent = item.label;
+          menuItem.addEventListener("click", () => {
+            item.onClick();
+            toggleMenu(false); // 点击后关闭菜单
+          });
+          dropdown.appendChild(menuItem);
+        });
+
+        // 切换菜单显示状态
+        function toggleMenu(show) {
+          const wasOpen = dropdown.style.display === "block";
+          const shouldOpen = show !== undefined ? show : !wasOpen;
+
+          if (shouldOpen) {
+            // 关闭所有其他打开的菜单
+            document.querySelectorAll(".ActionMenu-dropdown").forEach((menu) => {
+              if (menu !== dropdown) {
+                menu.style.display = "none";
+              }
+            });
+            dropdown.style.display = "block";
+            const rect = button.getBoundingClientRect();
+            const menuWidth = dropdown.offsetWidth || 200;
+            const viewportWidth = window.innerWidth;
+            const rightSpace = viewportWidth - rect.right;
+
+            if (rightSpace < menuWidth) {
+              dropdown.style.right = `${viewportWidth - rect.right}px`;
+              dropdown.style.left = "auto";
+            } else {
+              dropdown.style.left = `${rect.left}px`;
+              dropdown.style.right = "auto";
+            }
+            dropdown.style.top = `${rect.bottom}px`;
+
+            const scrollContainer =
+              document.querySelector(".downloading") || window;
+            if (scrollContainer) {
+              const handleScroll = () => {
+                const newRect = button.getBoundingClientRect();
+                const menuWidth =
+                  dropdown.getBoundingClientRect().width || 200;
+                const viewportWidth = window.innerWidth;
+                const rightSpace = viewportWidth - newRect.right - 10;
+
+                if (rightSpace < menuWidth) {
+                  dropdown.style.right = `${viewportWidth - newRect.right}px`;
+                  dropdown.style.left = "auto";
+                } else {
+                  dropdown.style.left = `${newRect.left}px`;
+                  dropdown.style.right = "auto";
+                }
+                dropdown.style.top = `${newRect.bottom}px`;
+              };
+              scrollContainer.addEventListener("scroll", handleScroll);
+              dropdown.handleScroll = handleScroll;
+              dropdown.scrollContainer = scrollContainer;
+            }
+          } else {
+            if (dropdown.scrollContainer && dropdown.handleScroll) {
+              dropdown.scrollContainer.removeEventListener(
+                "scroll",
+                dropdown.handleScroll
+              );
+            }
+            dropdown.style.display = "none";
+            dropdown.dataset.open = "false";
+          }
+          container.classList.toggle("open", shouldOpen);
+        }
+
+        // 按钮点击事件
+        button.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleMenu();
+        });
+
+        // 点击其他区域关闭菜单
+        const closeOnOutsideClick = (e) => {
+          if (!container.contains(e.target)) {
+            toggleMenu(false);
+          }
+        };
+
+        document.addEventListener("click", closeOnOutsideClick);
+
+        // 清理函数（可选，用于组件销毁时）
+        container.destroy = () => {
+          document.removeEventListener("click", closeOnOutsideClick);
+        };
+
+        return container;
+      }
+
+      function closeAllActionMenus() {
+        document.querySelectorAll(".ActionMenu-dropdown").forEach((menu) => {
+          menu.style.display = "none";
+        });
+      }
+
+      function deleteFavorite(index) {
+        if (!confirm("确定要删除该收藏吗？")) return;
+        ipcRenderer.send("delete-favorite", index);
+      }
+
+      window.showEditDialog = function (index) {
+        ipcRenderer
+          .invoke("show-edit-dialog", index)
+          .then((result) => {
+            if (result) {
+              loadFavorites();
+            }
+          })
+          .catch((err) => {
+            console.error("Error showing edit dialog:", err);
+          });
+      };
+
+      window.editEpisodes = function (index) {
+        if (!window.favorites || !Array.isArray(window.favorites)) {
+          alert("收藏数据未加载");
+          return;
+        }
+        const item = window.favorites[index];
+        if (!item) {
+          alert("找不到收藏项");
+          return;
+        }
+
+        ipcRenderer
+          .invoke("show-episode-dialog", index)
+          .then((result) => {
+            if (!result || !result.success) return;
+            const { total = 0, downloaded = 0 } = result;
+            const totalNum =
+              typeof total === "number" && !isNaN(total) ? total : 0;
+            const downloadedNum =
+              typeof downloaded === "number" && !isNaN(downloaded)
+                ? downloaded
+                : 0;
+            if (downloadedNum > totalNum) {
+              alert("已下载集数不能大于总集数");
+              return;
+            }
+            item.totalEpisodes = totalNum;
+            item.downloadedEpisodes = downloadedNum;
+            ipcRenderer.send("update-favorites", window.favorites);
+            renderFavorites();
+          })
+          .catch((err) => {
+            console.error("Error editing episodes:", err);
+            alert("编辑集数时出错");
+          });
+      };
+
+      let draggedIndex = null;
+
+      // 渲染收藏列表（接收主进程数据）
+      function renderFavorites(favorites) {
+        document.querySelectorAll(".ActionMenu").forEach((menu) => {
+          menu.destroy?.();
+          menu.remove();
+        });
+        document.querySelectorAll(".ActionMenu-dropdown").forEach((dropdown) => {
+          dropdown.remove();
+        });
+
+        const isInitialRender = !window.hasRenderedFavorites;
+        window.hasRenderedFavorites = true;
+
+        if (isInitialRender) {
+          favorites.forEach((item) => {
+            item.isNew = false;
+          });
+        }
+
+        // 对收藏项进行排序，使置顶项显示在最前面
+        const sortedFavorites = [...favorites].sort((a, b) => {
+          // 置顶项排在前面
+          if (a.pinToTop && !b.pinToTop) return -1;
+          if (!a.pinToTop && b.pinToTop) return 1;
+          return 0;
+        });
+
+        window.favorites = favorites;
+        const downloadingList = document.getElementById("downloadingList");
+        const downloadedList = document.getElementById("downloadedList");
+
+        downloadingList.innerHTML = "";
+        downloadedList.innerHTML = "";
+
+        const hasNewItems = favorites.some((item) => item.isNew);
+
+        if (favorites.length === 0) {
+          downloadingList.innerHTML =
+            '<div class="empty-tip">数据为空，添加收藏地址</div>';
+          downloadedList.innerHTML =
+            '<div class="empty-tip">暂无已下载项目</div>';
+          return;
+        } else {
+          const newItemIndex = favorites.findIndex((item) => item.isNew);
+          sortedFavorites.forEach((item, sortedIndex) => {
+            // 找到原始索引，用于操作菜单
+            const originalIndex = favorites.findIndex(
+              (fav) => fav.title === item.title && fav.url === item.url
+            );
+            const isNewItem = item.isNew && item.isNew === true;
+            const { title, url } = item;
+            const itemElement = document.createElement("div");
+            itemElement.className = "favorite-item";
+            // 如果是置顶项，添加置顶标记
+            if (item.pinToTop) {
+              itemElement.classList.add("pinned-item");
+            }
+            itemElement.draggable = true;
+            itemElement.dataset.index = originalIndex;
+
+            const titleSpan = document.createElement("span");
+            titleSpan.style.flex = "1";
+            titleSpan.style.wordBreak = "break-all";
+            // 为置顶项添加标记
+            titleSpan.textContent = item.pinToTop ? "📌 " + title : title;
+            itemElement.appendChild(titleSpan);
+
+            const episodeBtn = document.createElement("button");
+            episodeBtn.className = "btn episode-btn";
+            episodeBtn.style.height = "32px";
+            episodeBtn.style.fontSize = "14px";
+            episodeBtn.textContent =
+              item.totalEpisodes || 0 === 0
+                ? item.downloadedEpisodes || 0 === 0
+                  ? "设置集数"
+                  : `下载: ${item.downloadedEpisodes || 0}`
+                : item.totalEpisodes || 0 === item.downloadedEpisodes || 0
+                ? "已下载"
+                : `总集数: ${item.totalEpisodes || 0}，已下载: ${
+                    item.downloadedEpisodes || 0
+                  }`;
+            episodeBtn.addEventListener("click", async function () {
+              const itemIndex = parseInt(
+                this.closest(".favorite-item").dataset.index
+              );
+              await ipcRenderer.invoke("show-episode-dialog", itemIndex);
+            });
+            itemElement.appendChild(episodeBtn);
+
+            const actionDiv = document.createElement("div");
+            actionDiv.className = "action-buttons";
+
+            const visitBtn = document.createElement("button");
+            visitBtn.className = "btn visit-btn";
+            visitBtn.style.height = "32px";
+            visitBtn.style.fontSize = "14px";
+            visitBtn.textContent = "访问";
+            visitBtn.addEventListener("click", () => {
+              // 检查是否有openMethod属性，并根据属性值决定打开方式
+              if (item.openMethod && item.openMethod === "external") {
+                // 使用系统默认浏览器打开
+                ipcRenderer.send("open-external-browser", url);
+              } else {
+                // 使用内部窗口打开
+                ipcRenderer.send("open-new-window", url);
+              }
+            });
+            actionDiv.appendChild(visitBtn);
+
+            const menu = createActionMenu([
+              {
+                label: "编辑",
+                onClick: () => {
+                  showEditDialog(originalIndex);
+                },
+              },
+              {
+                label: "删除",
+                onClick: () => deleteFavorite(originalIndex),
+              },
+            ]);
+            actionDiv.appendChild(menu);
+
+            itemElement.appendChild(actionDiv);
+
+            if (isNewItem && !isInitialRender) {
+              itemElement.classList.add("new-item");
+              setTimeout(() => {
+                item.isNew = false;
+              }, 1000);
+              requestAnimationFrame(() => {
+                const container = document.body;
+                container.scrollTo({
+                  top: container.scrollHeight,
+                  behavior: "smooth",
+                });
+              });
+            }
+
+            itemElement.addEventListener("dragstart", (e) => {
+              draggedIndex = e.target.dataset.index;
+              e.dataTransfer.effectAllowed = "move";
+              e.target.classList.add("dragging");
+            });
+
+            itemElement.addEventListener("dragend", (e) => {
+              e.target.classList.remove("dragging");
+            });
+
+            itemElement.addEventListener("dragover", (e) => {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+            });
+
+            itemElement.addEventListener("drop", (e) => {
+              e.preventDefault();
+              const targetIndex = e.target
+                .closest(".favorite-item")
+                .dataset.index;
+              if (draggedIndex !== targetIndex) {
+                [favorites[draggedIndex], favorites[targetIndex]] = [
+                  favorites[targetIndex],
+                  favorites[draggedIndex],
+                ];
+                ipcRenderer.send("update-favorites-order", favorites);
+                renderFavorites(favorites);
+              }
+            });
+
+            const total = item.totalEpisodes || 0;
+            const downloaded = item.downloadedEpisodes || 0;
+
+            if (total > 0 && total === downloaded) {
+              downloadedList.appendChild(itemElement);
+            } else {
+              downloadingList.appendChild(itemElement);
+            }
+          });
+
+          if (downloadingList.children.length === 0) {
+            downloadingList.innerHTML =
+              '<div class="empty-tip">暂无下载中项目</div>';
+          }
+          if (downloadedList.children.length === 0) {
+            downloadedList.innerHTML =
+              '<div class="empty-tip">暂无已下载项目</div>';
+          }
+
+          document.querySelectorAll(".tab-btn").forEach((btn) =>
+            btn.classList.remove("active")
+          );
+          document
+            .querySelector('.tab-btn[data-tab="downloading"]')
+            .classList.add("active");
+        }
+      }
+
+      // 初始化：请求加载收藏
+      ipcRenderer.send("get-favorites");
+      // 接收收藏更新事件
+      ipcRenderer.on("favorites-updated", (event, favorites) => {
+        renderFavorites(favorites);
+        // 同时更新标签页计数
+        updateTabCounts();
+      });
+
+      // 标签切换逻辑
+      document.querySelectorAll(".tab-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach((btn) =>
+            btn.classList.remove("active")
+          );
+          button.classList.add("active");
+
+          document.querySelectorAll(".tab-content").forEach((content) => {
+            content.classList.remove("active");
+          });
+
+          const tabId = button.dataset.tab;
+          document.getElementById(`${tabId}List`).classList.add("active");
+        });
+      });
+
+      // 搜索功能实现
+      const searchInput = document.getElementById("searchInput");
+
+      function updateTabCounts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const allItems = document.querySelectorAll(".favorite-item");
+        let downloadingCount = 0,
+          downloadedCount = 0;
+
+        allItems.forEach((item) => {
+          const isVisible = item.style.display !== "none";
+          if (!isVisible) return;
+
+          // 检查项目是否属于已下载类别
+          const titleSpan = item.querySelector("span");
+          const itemIndex = parseInt(item.dataset.index);
+          const itemData = window.favorites && window.favorites[itemIndex];
+          const isDownloaded =
+            itemData &&
+            itemData.totalEpisodes &&
+            itemData.totalEpisodes === itemData.downloadedEpisodes;
+
+          if (isDownloaded) downloadedCount++;
+          else downloadingCount++;
+        });
+
+        // 更新标签页计数
+        document.querySelector(
+          '[data-tab="downloading"] .tab-count'
+        ).textContent = `(${downloadingCount})`;
+        document.querySelector(
+          '[data-tab="downloaded"] .tab-count'
+        ).textContent = `(${downloadedCount})`;
+      }
+
+      function filterFavorites() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const favorites = document.querySelectorAll(".favorite-item");
+        const hasSearchTerm = !!searchTerm;
+
+        // 显示/隐藏清空按钮
+        document.getElementById("clearSearch").style.display = hasSearchTerm
+          ? "block"
+          : "none";
+
+        favorites.forEach((favorite) => {
+          const title = favorite.querySelector("span").textContent.toLowerCase();
+          const shouldShow = !hasSearchTerm || title.includes(searchTerm);
+          favorite.style.display = shouldShow ? "flex" : "none";
+        });
+
+        // 更新标签页计数
+        updateTabCounts();
+      }
+
+      // 为搜索框添加输入事件监听
+      // 搜索框事件监听
+      searchInput.addEventListener("input", filterFavorites);
+
+      // 清空按钮点击事件
+      document.getElementById("clearSearch").addEventListener("click", () => {
+        searchInput.value = "";
+        filterFavorites();
+      });
+
+      // 初始加载时更新计数
+      document.addEventListener("DOMContentLoaded", updateTabCounts);
+
+      // 新添加按钮点击事件
+      document.getElementById("addBtn").addEventListener("click", () => {
+        ipcRenderer.send("open-add-dialog");
+      });
+
+      // 处理导入导出通知
+      ipcRenderer.on("import-export-notification", (event, data) => {
+        const notification = document.getElementById("importExportNotification");
+
+        // 设置通知样式和内容
+        notification.style.display = "block";
+        notification.style.backgroundColor =
+          data.type === "success" ? "#4caf50" : "#f44336";
+        notification.textContent = data.message;
+
+        // 3秒后自动隐藏通知
+        setTimeout(() => {
+          notification.style.display = "none";
+        }, 3000);
+      });
+    </script>
+  </body>
+</html>

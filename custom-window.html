@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>收藏地址</title>
+    <link rel="icon" type="image/x-icon" href="build/icons/icon.ico">
+    <link rel="icon" type="image/png" href="build/icons/icon.png">
+    <!-- 引入 Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="colors.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+      :root {
+        --toolbar-bg: var(--secondary-color);
+        --button-primary: var(--primary-color);
+        --button-hover: var(--primary-hover-color);
+        --border-color: var(--border-color);
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%; /* 确保html/body占满视口 */
+        background-color: var(--background-color);
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* 隐藏外层滚动条 */
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        padding: 8px 24px; /* 降低垂直内边距减少工具栏高度 */
+        background-color: var(--toolbar-bg);
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        flex-shrink: 0; /* 固定工具栏不收缩 */
+      }
+
+      .toolbar button {
+        margin-right: 12px;
+        padding: 6px 10px;
+        background-color: white;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+      }
+
+      .toolbar button:hover {
+        background-color: var(--secondary-hover-color);
+        border-color: var(--button-primary);
+      }
+
+      .toolbar button:active {
+        transform: scale(0.98);
+      }
+
+      .toolbar button svg {
+        width: 18px;
+        height: 18px;
+        fill: #4b5563;
+      }
+
+      .address-bar {
+        flex-grow: 1;
+        padding: 6px 12px;
+        margin-left: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 13px;
+        transition: border-color 0.2s ease;
+      }
+
+      .address-bar:focus {
+        outline: none;
+        border-color: var(--button-primary);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+      }
+
+      /* 按钮禁用样式 */
+      .toolbar button:disabled {
+        background-color: #f9fafb;
+        border-color: #e5e7eb;
+        cursor: not-allowed;
+      }
+
+      .toolbar button:disabled svg {
+        fill: #d1d5db;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 工具栏 -->
+    <div class="toolbar">
+      <button id="backBtn" aria-label="后退">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+        </svg>
+      </button>
+      <button id="forwardBtn" aria-label="前进">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+        </svg>
+      </button>
+      <button id="refreshBtn" aria-label="刷新">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+        </svg>
+      </button>
+      <input type="text" class="address-bar" id="addressInput" placeholder="输入地址" />
+      <button id="goBtn">前往</button>
+    </div>
+    <!-- 确保有这个 webview 标签 -->
+    <webview id="webview" style="display: flex; width: 100%; flex-grow: 1; overflow: auto"></webview>
+    <script>
+      const { ipcRenderer } = require("electron");
+      const webview = document.getElementById("webview");
+      const backBtn = document.getElementById("backBtn");
+      const forwardBtn = document.getElementById("forwardBtn");
+      const refreshBtn = document.getElementById("refreshBtn");
+      const addressInput = document.getElementById("addressInput");
+      const goBtn = document.getElementById("goBtn");
+
+      // 初始化按钮状态
+      function updateButtonState() {
+        backBtn.disabled = !webview.canGoBack();
+        forwardBtn.disabled = !webview.canGoForward();
+      }
+
+      ipcRenderer.on("load-url", (event, url) => {
+        webview.src = url;
+        addressInput.value = url;
+      });
+
+      // 返回按钮事件监听
+      backBtn.addEventListener("click", () => {
+        if (webview.canGoBack()) {
+          webview.goBack();
+        }
+      });
+
+      // 前进按钮事件监听
+      forwardBtn.addEventListener("click", () => {
+        if (webview.canGoForward()) {
+          webview.goForward();
+        }
+      });
+
+      // 刷新按钮事件监听
+      refreshBtn.addEventListener("click", () => {
+        webview.reload();
+      });
+
+      // 前往按钮事件监听
+      goBtn.addEventListener("click", () => {
+        const url = addressInput.value;
+        if (url) {
+          webview.src = url;
+        }
+      });
+
+      // 地址输入框回车事件监听
+      addressInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          const url = addressInput.value;
+          if (url) {
+            webview.src = url;
+          }
+        }
+      });
+
+      // 监听 webview 导航事件，更新按钮状态
+      webview.addEventListener("did-navigate-in-page", () => {
+        const currentUrl = webview.getURL();
+        if (!currentUrl.startsWith("about:blank")) {
+          addressInput.value = currentUrl;
+        }
+        updateButtonState();
+      });
+
+      webview.addEventListener("did-navigate", () => {
+        const currentUrl = webview.getURL();
+        if (!currentUrl.startsWith("about:blank")) {
+          addressInput.value = currentUrl;
+        }
+        updateButtonState();
+      });
+
+      webview.addEventListener("dom-ready", updateButtonState);
+
+      // 注入脚本彻底移除网页右键禁用
+      webview.addEventListener("dom-ready", () => {
+        webview.executeJavaScript(`
+          // 移除所有已存在的contextmenu事件监听器
+          const allElements = document.getElementsByTagName('*');
+          for (const el of allElements) {
+            const listeners = el.__eventListeners || {};
+            if (listeners.contextmenu) {
+              listeners.contextmenu.forEach(listener => {
+                el.removeEventListener('contextmenu', listener);
+              });
+            }
+          }
+          // 覆盖addEventListener阻止新的contextmenu监听
+          const originalAddEventListener = window.addEventListener;
+          window.addEventListener = function(type, listener, options) {
+            if (type === 'contextmenu') return;
+            originalAddEventListener.apply(this, arguments);
+          };
+          // 强制允许右键默认行为
+          document.addEventListener('contextmenu', e => {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            return true;
+          }, true);
+        `);
+      });
+
+      // 处理外部链接点击（新窗口）
+      webview.addEventListener("new-window", (event) => {
+        event.preventDefault();
+        ipcRenderer.send("open-new-window", event.url);
+      });
+
+      // 右键菜单处理（复制地址）
+      const { Menu, MenuItem, clipboard } = require("electron").remote;
+      webview.addEventListener("contextmenu", (event) => {
+        const target = event.target;
+        // 检查是否是链接元素
+        if (target.tagName === "A" && target.href) {
+          const url = target.href;
+          const menu = new Menu();
+          menu.append(
+            new MenuItem({
+              label: "复制地址",
+              click: () => clipboard.writeText(url),
+            })
+          );
+          menu.popup();
+        }
+      });
+
+      // 处理文件下载请求
+      webview.addEventListener("will-download", (event, item) => {
+        ipcRenderer.send("handle-download", item.getURL(), item.getFilename());
+      });
+
+      // 初始化按钮状态
+      updateButtonState();
+
+      // 读取并应用保存的主题
+      const savedTheme = localStorage.getItem('theme') || 'default';
+      if (savedTheme !== 'default') {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    </script>
+  </body>
+</html>

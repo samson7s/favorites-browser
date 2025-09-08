@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置用户名</title>
+    <link rel="icon" type="image/x-icon" href="build/icons/icon.ico">
+    <link rel="icon" type="image/png" href="build/icons/icon.png">
+    <link rel="stylesheet" href="colors.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            font-family: sans-serif;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+            background-color: var(--background-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-background);
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 12px;
+            margin: 5px 0 0 8px;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .cancel-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .confirm-btn {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 6px;
+            padding: 12px 28px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-group">
+            <label for="username">请设置用户名</label>
+            <input type="text" id="username" placeholder="输入用户名" required>
+            <div class="error-message" id="usernameError">用户名不能为空</div>
+        </div>
+        <div class="button-group">
+            <button class="cancel-btn" id="cancelBtn">取消</button>
+            <button class="confirm-btn" id="confirmBtn">确认</button>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        const usernameInput = document.getElementById('username');
+        const usernameError = document.getElementById('usernameError');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // 验证用户名
+        function validateUsername() {
+            const username = usernameInput.value.trim();
+            if (!username) {
+                usernameError.style.display = 'block';
+                return false;
+            }
+            usernameError.style.display = 'none';
+            return true;
+        }
+
+        // 确认按钮点击事件
+        confirmBtn.addEventListener('click', () => {
+            if (validateUsername()) {
+                ipcRenderer.send('username-confirmed', usernameInput.value.trim());
+                window.close();
+            }
+        });
+
+        // 取消按钮点击事件
+        cancelBtn.addEventListener('click', () => {
+            window.close();
+        });
+
+        // 回车提交
+        usernameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                confirmBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+:root {
+  /* 默认配色方案 */
+  --primary-color: #2563eb;
+  --secondary-color: #f8f9fa;
+  --accent-color: #4ade80;
+  --text-color: #333; /* 浅色背景，使用黑色字体 */
+  --background-color: #f5f7fa;
+  --card-color: #ffffff;
+  --border-color: #e5e7eb;
+  --error-color: #ef4444;
+  --input-background: #ffffff;
+  --primary-rgb: 37, 99, 235;
+  --secondary-color: #f8f9fa;
+  --secondary-hover-color: #2563eb;
+  --primary-hover-color: #1e40af;
+}
+
+/* 暗黑配色方案 */
+[data-theme='dark'] {
+  --primary-color: #3b82f6;
+  --secondary-color: #1e293b;
+  --accent-color: #60a5fa;
+  --text-color: #f8fafc; /* 深色背景，使用白色字体 */
+  --background-color: #0f172a;
+  --card-color: #1e293b;
+  --border-color: #475569;
+  --error-color: #f87171;
+  --input-background: #1e293b;
+  --primary-rgb: 59, 130, 246;
+  --secondary-color: #1e293b;
+  --secondary-hover-color: #2563eb;
+  --primary-hover-color: #1e40af;
+}
+
+/* 蓝色主题 */
+[data-theme='blue'] {
+  --primary-color: #1e40af;
+  --secondary-color: #e0f2fe;
+  --accent-color: #38bdf8;
+  --text-color: #333; /* 浅色背景，使用黑色字体 */
+  --background-color: #bfdbfe;
+  --card-color: #eff6ff;
+  --border-color: #93c5fd;
+  --error-color: #ef4444;
+  --input-background: #ffffff;
+  --primary-rgb: 30, 64, 175;
+  --secondary-color: #e0f2fe;
+  --secondary-hover-color: #2563eb;
+  --primary-hover-color: #1e40af;
+}
+
+/* 绿色主题 */
+[data-theme='green'] {
+  --primary-color: #059669;
+  --secondary-color: #dcfce7;
+  --accent-color: #22c55e;
+  --text-color: #333; /* 浅色背景，使用黑色字体 */
+  --background-color: #bbf7d0;
+  --card-color: #f0fdf4;
+  --border-color: #86efac;
+  --error-color: #ef4444;
+  --input-background: #ffffff;
+  --primary-rgb: 5, 150, 105;
+  --secondary-color: #dcfce7;
+  --secondary-hover-color: #22c55e;
+  --primary-hover-color: #059669;
+}
+
+/* 紫色主题 */
+[data-theme='purple'] {
+  --primary-color: #6b21a8;
+  --secondary-color: #f3e8ff;
+  --accent-color: #a855f7;
+  --text-color: #333; /* 浅色背景，使用黑色字体 */
+  --background-color: #e9d5ff;
+  --card-color: #faf5ff;
+  --border-color: #c4b5fd;
+  --error-color: #ef4444;
+  --input-background: #ffffff;
+  --primary-rgb: 107, 33, 168;
+  --secondary-color: #f3e8ff;
+  --secondary-hover-color: #a855f7;
+  --primary-hover-color: #6b21a8;
+}
+
+/* 橙色主题 */
+[data-theme='orange'] {
+  --primary-color: #c2410c;
+  --secondary-color: #fff7ed;
+  --accent-color: #f97316;
+  --text-color: #333; /* 浅色背景，使用黑色字体 */
+  --background-color: #fed7aa;
+  --card-color: #fff7ed;
+  --border-color: #fdba74;
+  --error-color: #ef4444;
+  --input-background: #ffffff;
+  --primary-rgb: 194, 65, 12;
+  --secondary-color: #fff7ed;
+  --secondary-hover-color: #f97316;
+  --primary-hover-color: #c2410c;
+}
