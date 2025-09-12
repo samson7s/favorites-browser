@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>关于开发者</title>
+        <link rel="icon" type="image/x-icon" href="build/icons/icon.ico">
+        <link rel="icon" type="image/png" href="build/icons/icon.png">
+        <link rel="stylesheet" href="colors.css">
+        <script src="language.js"></script>
+        <style>
+            body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                margin: 0;
+                padding: 2rem;
+                min-height: 100vh;
+                background-color: var(--background-color) !important;
+                color: var(--text-color);
+                line-height: 1.6;
+            }
+
+            .app-info {
+                color: var(--text-color);
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background-color: var(--card-color) !important;
+                padding: 2rem;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+
+            h1 {
+                color: var(--primary-color);
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            h2 {
+                color: var(--text-color);
+                margin-top: 1.5rem;
+            }
+
+            p {
+                margin-bottom: 1rem;
+            }
+
+            .back-btn {
+                background-color: var(--primary-color);
+                color: var(--text-color);
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                margin-top: 2rem;
+            }
+
+            .developer-info {
+                display: flex;
+                align-items: center;
+                margin-bottom: 2rem;
+            }
+
+            .developer-avatar {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background-color: var(--secondary-color);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 1rem;
+                font-size: 2rem;
+                color: var(--text-color);
+            }
+
+            ul {
+                padding-left: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            li {
+                margin-bottom: 0.5rem;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            // 初始化语言设置
+            document.addEventListener('DOMContentLoaded', function () {
+                initializeLanguage();
+            });
+        </script>
+        <div class="container">
+            <h1 data-i18n="about">关于</h1>
+
+            <div class="developer-info">
+                <div class="developer-avatar">👨‍💻</div>
+                <div>
+                    <h2 data-i18n="developerInfo">开发者信息</h2>
+                    <p data-i18n="developer">开发者: 胡岳超</p>
+                    <p data-i18n="email">邮箱: samson_hu@msn.com</p>
+                </div>
+            </div>
+
+            <div class="app-info">
+                <h2 data-i18n="appIntroduction">程序介绍</h2>
+                <p data-i18n="appDescription">收藏夹记事本是一款专为高效管理网络收藏内容打造的轻量级应用，致力于帮助用户系统化地组织、搜索和访问各类网址资源。</p>
+                <p data-i18n="mainFeatures">主要功能:</p>
+                <ul>
+                    <li data-i18n="feature1">支持网址收藏的添加、删除、编辑与批量管理，操作便捷直观</li>
+                    <li data-i18n="feature2">支持通过拖放操作自定义排序，收藏项目可按类别进行分组管理</li>
+                    <li data-i18n="feature3">支持多标签页浏览模式，可对收藏内容进行灵活分组及快速切换</li>
+                    <li data-i18n="feature4">内置智能搜索功能，支持关键词高亮显示，快速定位目标内容</li>
+                    <li data-i18n="feature5">提供简洁直观的用户界面，支持明亮/暗黑主题自定义切换</li>
+                    <li data-i18n="feature6">支持OneDrive云盘同步，实现多设备数据互通，随时备份与恢复</li>
+                    <li data-i18n="feature7">提供导入导出功能，支持与主流浏览器收藏夹格式兼容</li>
+                </ul>
+                <p data-i18n="version">版本: 1.0.1</p>
+            </div>
+
+            <button class="back-btn" id="backBtn" data-i18n="backToSettings">返回设置</button>
+        </div>
+
+        <script>
+            const { ipcRenderer } = require('electron');
+
+            // 读取并应用保存的主题
+            const savedTheme = localStorage.getItem('theme') || 'default';
+            if (savedTheme !== 'default') {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+
+            document.getElementById('backBtn').addEventListener('click', () => {
+                window.close();
+            });
+        </script>
+    </body>
+</html>

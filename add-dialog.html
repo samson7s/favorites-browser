@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>添加收藏</title>
+        <link rel="icon" type="image/x-icon" href="build/icons/icon.ico">
+        <link rel="icon" type="image/png" href="build/icons/icon.png">
+        <link rel="stylesheet" href="colors.css">
+        <link rel="stylesheet" href="styles.css">
+        <script src="language.js"></script>
+        <style>
+            body {
+                width: 100%;
+                min-height: 100vh;
+                padding: 20px;
+                margin: 0;
+                font-family: sans-serif;
+                box-sizing: border-box;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                overflow: auto;
+                background-color: var(--background-color);
+            }
+
+            .container {
+                width: 100%;
+                max-width: 600px;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+                width: 100%;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            input {
+                width: 100%;
+                padding: 8px;
+                box-sizing: border-box;
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                background: var(--input-background);
+                color: var(--text-color);
+            }
+
+            .error-message {
+                color: var(--error-color);
+                font-size: 10px;
+                margin: 3px 0 0 8px;
+                padding: 0;
+                display: none;
+            }
+
+            .button-group {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-top: 20px;
+            }
+
+            .cancel-btn {
+                background-color: var(--secondary-color);
+                color: var(--text-color);
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                padding: 12px 24px;
+                font-weight: 500;
+            }
+
+            .cancel-btn:hover {
+                background-color: var(--secondary-hover-color);
+                color: var(--button-text-light);
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .cancel-btn:active {
+                transform: translateY(0);
+            }
+
+            .confirm-btn {
+                background-color: var(--primary-color);
+                color: var(--button-text-light);
+                border: none;
+                border-radius: 6px;
+                padding: 12px 28px;
+                font-weight: 600;
+                box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.3);
+            }
+
+            .confirm-btn:hover {
+                background-color: var(--primary-hover-color) !important;
+                color: var(--button-text-light);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.4);
+            }
+
+            .confirm-btn:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.3);
+                background-color: var(--primary-hover-color) !important;
+                color: var(--button-text-light);
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            // 初始化语言设置
+            document.addEventListener('DOMContentLoaded', function () {
+                initializeLanguage();
+            });
+        </script>
+        <div class="container">
+            <div class="form-group">
+                <label for="title" data-i18n="titleOptional"></label>
+                <input type="text" id="title" data-i18n-placeholder="enterTitle">
+                <div class="error-message" id="title-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="url" data-i18n="url"></label>
+                <input type="text" id="url" data-i18n-placeholder="enterUrl">
+                <div class="error-message" id="url-error"></div>
+            </div>
+            <div class="form-group">
+                <label data-i18n="properties"></label>
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <label style="display: inline-flex; align-items: center; white-space: nowrap; margin-bottom: 0;">
+                        <input type="radio" name="openMethod" value="internal" checked>
+                        <span style="margin-left: 5px;" data-i18n="internal"></span>
+                    </label>
+                    <label style="display: inline-flex; align-items: center; white-space: nowrap; margin-bottom: 0;">
+                        <input type="radio" name="openMethod" value="external">
+                        <span style="margin-left: 5px;" data-i18n="external"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label style="display: inline-flex; align-items: center; white-space: nowrap;">
+                    <input type="checkbox" id="pinToTop">
+                    <span style="margin-left: 5px;" data-i18n="pinToTop"></span>
+                </label>
+            </div>
+            <div class="button-group">
+                <button id="cancelBtn" class="cancel-btn" data-i18n="cancel"></button>
+                <button id="confirmBtn" class="confirm-btn" data-i18n="confirm"></button>
+            </div>
+        </div>
+        <script>
+            const { ipcRenderer } = require('electron');
+            const titleInput = document.getElementById('title');
+            const pinToTopCheckbox = document.getElementById('pinToTop');
+            const urlInput = document.getElementById('url');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+
+            // 接收初始值（虽然添加对话框不需要，但保持结构一致）
+            ipcRenderer.on('set-edit-values', (event, { title, url, index }) => {
+                titleInput.value = title || '';
+                urlInput.value = url || '';
+            });
+
+            ipcRenderer.on('edit-dialog-error', (event, { field, message }) => {
+                const errorElement = document.getElementById(`${field}-error`);
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                window.close();
+            });
+
+            confirmBtn.addEventListener('click', () => {
+                try {
+                    // 清除之前的错误提示
+                    document.querySelectorAll('.error-message').forEach((el) => {
+                        el.textContent = '';
+                        el.style.display = 'none';
+                    });
+
+                    const title = titleInput.value.trim();
+                    const url = urlInput.value.trim();
+                    let isValid = true;
+
+                    // 验证标题（添加对话框可选，所以不强制）
+                    if (!title) {
+                        // 可选字段不显示错误，使用url作为默认标题
+                    }
+
+                    // 验证URL
+                    if (!url) {
+                        document.getElementById('url-error').textContent = globalTranslations[getCurrentLanguage()]['urlCannotBeEmpty'] || '收藏地址不能为空';
+                        document.getElementById('url-error').style.display = 'block';
+                        isValid = false;
+                    } else if (!isValidUrl(url)) {
+                        document.getElementById('url-error').textContent = globalTranslations[getCurrentLanguage()]['invalidUrl'] || '请输入有效的URL地址';
+                        document.getElementById('url-error').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        const finalTitle = title || url;
+                        // 安全获取打开方式
+                        let openMethod = 'internal';
+                        try {
+                            const selectedMethod = document.querySelector('input[name="openMethod"]:checked');
+                            if (selectedMethod && selectedMethod.value) {
+                                openMethod = selectedMethod.value;
+                            }
+                        } catch (error) {
+                            console.error('获取打开方式失败:', error);
+                        }
+
+                        // 安全获取置顶状态
+                        let pinToTop = false;
+                        if (pinToTopCheckbox && typeof pinToTopCheckbox.checked !== 'undefined') {
+                            pinToTop = pinToTopCheckbox.checked;
+                        }
+                        
+                        ipcRenderer.send('add-favorite-confirm', {
+                            title: finalTitle,
+                            url,
+                            openMethod,
+                            pinToTop,
+                        });
+                        window.close();
+                    }
+                } catch (error) {
+                    console.error('确认操作失败:', error);
+                    // 显示通用错误信息
+                    const generalError = document.createElement('div');
+                    generalError.className = 'error-message';
+                    generalError.style.display = 'block';
+                    generalError.textContent = globalTranslations[getCurrentLanguage()]['operationFailed'] || '操作失败，请重试';
+                    // 添加到容器末尾
+                    document.querySelector('.container').appendChild(generalError);
+                    // 3秒后移除错误提示
+                    setTimeout(() => {
+                        if (generalError.parentNode) {
+                            generalError.parentNode.removeChild(generalError);
+                        }
+                    }, 3000);
+                }
+            });
+
+            // 读取并应用保存的主题
+            const savedTheme = localStorage.getItem('theme') || 'default';
+            if (savedTheme !== 'default') {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+
+            // 简单的URL验证函数
+            function isValidUrl(string) {
+                try {
+                    new URL(string);
+                    return true;
+                } catch (_) {
+                    return false;
+                }
+            }
+        </script>
+    </body>
+</html>
