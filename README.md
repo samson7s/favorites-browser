@@ -201,6 +201,8 @@ Favorites browser/
 
 ![支付宝捐赠二维码](assets/alipay-qrcode.png)
 
+![支付宝捐赠二维码](https://qr.alipay.com/paipai/downloadQrCodeImg.resource?code=aex18137ys4sde6tmtrgpec) 备用链接
+
 ## 联系方式
 
 如有任何问题、建议或合作意向，欢迎通过以下方式与我们交流：
