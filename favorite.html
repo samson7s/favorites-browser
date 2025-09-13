@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Favorites</title>
+    <script src="language.js"></script>
+    <script>
+      const { ipcRenderer } = require('electron');
+
+      function loadFavorites() {
+        ipcRenderer.send('get-favorites');
+      }
+
+      function addFavorite() {
+        const url = prompt(globalTranslations[getCurrentLanguage()]['enterURL'] || '请输入要收藏的URL：');
+        if (url) {
+          ipcRenderer.send('add-favorite', url);
+        }
+      }
+
+      function deleteFavorite(index) {
+        ipcRenderer.send('delete-favorite', index);
+      }
+
+      function showEditDialog(index) {
+        ipcRenderer.invoke('show-edit-dialog', index)
+          .then((result) => {
+            if (result) {
+              loadFavorites();
+            }
+          })
+          .catch((err) => {
+            console.error('Error showing edit dialog:', err);
+          });
+      }
+
+      ipcRenderer.on('favorites-updated', (event, favorites) => {
+        const list = document.getElementById('favorites-list');
+        const currentLanguage = getCurrentLanguage();
+        list.innerHTML = favorites
+          .map((url, index) => `
+            <li style="padding: 0.8rem 1rem; margin: 0.5rem 0; background: var(--secondary-color); border-radius: 6px; color: var(--text-color);">
+              ${url}
+              <button onclick="showEditDialog(${index})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; background: var(--primary-color); color: var(--text-color); border: none; margin-right: 0.5rem;">${globalTranslations[currentLanguage]['edit'] || '编辑'}</button>
+              <button onclick="deleteFavorite(${index})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; background: var(--error-color); color: var(--text-color); border: none;">${globalTranslations[currentLanguage]['delete'] || '删除'}</button>
+            </li>
+          `)
+          .join('');
+      });
+    </script>
+  </head>
+  <body onload="loadFavorites()" style="background-color: var(--background-color); margin: 0; padding: 1rem;">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLanguage();
+        });
+    </script>
+    <h1 style="color: var(--primary-color);" data-i18n="bookmarkList"></h1>
+    <button
+      onclick="addFavorite()"
+      data-i18n="addFavorite"
+      style="padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--primary-color); color: var(--text-color);"
+    >
+    </button>
+    <ul id="favorites-list"></ul>
+  </body>
+</html>
