@@ -49,9 +49,9 @@
     },
     "appx": {
       "applicationId": "FavoritesBrowser",
-      "publisherDisplayName": "胡岳超",
-      "publisher": "CN=9ECF63E0-9566-4BD1-B64C-C2B0B581655B",
-      "identityName": "0C75723A.favorites-browser-app-msix",
+      "publisherDisplayName": "App Developer",
+      "publisher": "CN=DEVELOPER-ID-HERE",
+      "identityName": "favorites-browser-app",
       "displayName": "收藏夹记事本"
     },
     "mac": {
@@ -92,7 +92,7 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "https://github.com/samson7s/favorites-browser/releases/"
+        "url": "https://github.com/username/repository/releases/"
       }
     ]
   }

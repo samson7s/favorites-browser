@@ -756,7 +756,7 @@ ipcMain.on('open-privacy-policy', (event) => {
     const { shell } = require('electron');
     
     // 隐私政策网页URL
-    const privacyPolicyUrl = 'https://github.com/samson7s/favorites-browser/blob/master/privacy-policy.md';
+    const privacyPolicyUrl = 'https://github.com/username/repository/blob/master/privacy-policy.md';
     
     // 使用默认浏览器打开隐私政策网页
     shell.openExternal(privacyPolicyUrl);

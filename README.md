@@ -121,29 +121,22 @@ Favorites browser/
 ├── README.md                      # 项目说明文档
 ├── about.html                     # 关于页面
 ├── add-dialog.html                # 添加收藏对话框
+├── assets/                        # 资源文件目录
+│   ├── alipay-qrcode.png          # 支付宝捐赠二维码
+│   └── images/                    # 图片资源目录
 ├── build/                         # 构建资源目录
-│   ├── aex18137ys4sde6tmtrgpec.png  # 支付宝捐赠二维码
-│   ├── entitlements.mac.plist       # macOS 应用权限配置
-│   ├── icons/                       # 应用图标资源
-│   │   ├── README.md                # 图标说明
-│   │   ├── icon.ico                 # Windows 应用图标
-│   │   ├── icon.png                 # macOS/Linux 应用图标
-│   │   └── icon.svg                 # 矢量图标源文件
-│   └── installer.nsh                # NSIS 安装脚本配置
+│   ├── entitlements.mac.plist     # macOS 应用权限配置
+│   ├── icons/                     # 应用图标资源
+│   └── installer.nsh              # NSIS 安装脚本配置
 ├── colors.css                     # 颜色主题和变量定义
 ├── custom-window.html             # 自定义窗口模板
 ├── edit-dialog.html               # 编辑收藏对话框
-├── electron.zip                   # Electron 相关资源
 ├── episode-dialog.html            # 集数管理对话框
 ├── favorite.html                  # 收藏详情页面
 ├── gitignore-guide.md             # Git忽略文件配置指南
-├── harmonyos-build-guide.md       # HarmonyOS平台构建指南
 ├── index.html                     # 应用主窗口
 ├── language.js                    # 语言翻译文件
-├── linux-build-guide.md           # Linux平台构建指南
-├── macos-build-guide.md           # macOS平台构建指南
 ├── main.js                        # Electron主进程代码
-├── microsoft-store-publish-guide.md # 微软商店发布指南
 ├── package.json                   # 项目依赖和构建脚本
 ├── privacy-policy.md              # 隐私政策文档
 ├── styles.css                     # 全局样式表
@@ -210,8 +203,7 @@ Favorites browser/
 
 ## 联系方式
 
-如有任何问题、建议或合作意向，欢迎联系我们：
-- 邮箱：samson_hu@msn.com
+如有任何问题、建议或合作意向，欢迎通过以下方式与我们交流：
 - GitHub：通过 GitHub Issues 或 Pull Requests 与我们交流
 
 ---
