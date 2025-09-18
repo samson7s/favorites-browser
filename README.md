@@ -18,9 +18,25 @@
 
 ## 应用截图
 
-以下是收藏夹记事本的主界面截图：
+以下是收藏夹记事本的主要界面截图：
 
-![收藏夹记事本主界面](assets/images/screenshot-1.png)
+### 主界面截图
+![主界面截图1](assets/images/1.png)
+
+### 分类管理界面
+![分类管理界面](assets/images/2.png)
+
+### 内容详情界面
+![内容详情界面](assets/images/3.png)
+
+### 搜索功能界面
+![搜索功能界面](assets/images/4.png)
+
+### 设置界面
+![设置界面](assets/images/5.png)
+
+### 导入导出功能
+![导入导出功能](assets/images/6.png)
 
 ## 安装方法
 
