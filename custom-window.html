@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>收藏地址</title>
+    <link rel="icon" type="image/x-icon" href="build/icons/icon.ico" />
+    <link rel="icon" type="image/png" href="build/icons/icon.png" />
+    <!-- 引入 Font Awesome CSS -->
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="colors.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="language.js"></script>
+    <style>
+      :root {
+        --toolbar-bg: var(--secondary-color);
+        --button-primary: var(--primary-color);
+        --button-hover: var(--primary-hover-color);
+        --border-color: var(--border-color);
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%; /* 确保html/body占满视口 */
+        background-color: var(--background-color);
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* 隐藏外层滚动条 */
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        padding: 8px 24px; /* 降低垂直内边距减少工具栏高度 */
+        background-color: var(--toolbar-bg);
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        flex-shrink: 0; /* 固定工具栏不收缩 */
+      }
+
+      .toolbar button {
+        margin-right: 12px;
+        padding: 6px 10px;
+        background-color: white;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+      }
+
+      .toolbar button:hover {
+        background-color: var(--secondary-hover-color);
+        border-color: var(--button-primary);
+      }
+
+      .toolbar button:active {
+        transform: scale(0.98);
+      }
+
+      .toolbar button svg {
+        width: 18px;
+        height: 18px;
+        fill: #4b5563;
+      }
+
+      .address-bar {
+        flex-grow: 1;
+        padding: 6px 12px;
+        margin-left: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 13px;
+        transition: border-color 0.2s ease;
+      }
+
+      .address-bar:focus {
+        outline: none;
+        border-color: var(--button-primary);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+      }
+
+      /* 按钮禁用样式 */
+      .toolbar button:disabled {
+        background-color: #f9fafb;
+        border-color: #e5e7eb;
+        cursor: not-allowed;
+      }
+
+      .toolbar button:disabled svg {
+        fill: #d1d5db;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        initializeLanguage();
+      });
+    </script>
+    <!-- 工具栏 -->
+    <div class="toolbar">
+      <button id="backBtn" aria-label="后退">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+        </svg>
+      </button>
+      <button id="forwardBtn" aria-label="前进">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+        </svg>
+      </button>
+      <button id="refreshBtn" aria-label="刷新">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+        </svg>
+      </button>
+      <button id="adBlockBtn" aria-label="广告拦截" title="广告拦截">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="adBlockIcon">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+      </button>
+      <input
+        type="text"
+        class="address-bar"
+        id="addressInput"
+        data-i18n-placeholder="addressPlaceholder"
+      />
+      <button id="goBtn" data-i18n="go"></button>
+    </div>
+    <!-- 确保有这个 webview 标签 -->
+    <!-- 配置nodeintegration以允许在webview中使用ipcRenderer -->
+    <webview
+      id="webview"
+      nodeintegration
+      style="display: flex; width: 100%; flex-grow: 1; overflow: auto"
+    ></webview>
+    <script>
+      const { ipcRenderer } = require("electron");
+      const webview = document.getElementById("webview");
+      const backBtn = document.getElementById("backBtn");
+      const forwardBtn = document.getElementById("forwardBtn");
+      const refreshBtn = document.getElementById("refreshBtn");
+      const addressInput = document.getElementById("addressInput");
+      const goBtn = document.getElementById("goBtn");
+      
+      // 当前收藏项的索引
+      let currentFavoriteIndex = null;
+      
+      // 首次p值记录状态跟踪
+      let isFirstPValueRecorded = false;
+      let firstRecordedPValue = null;
+
+      // 初始化按钮状态
+      function updateButtonState() {
+        backBtn.disabled = !webview.canGoBack();
+        forwardBtn.disabled = !webview.canGoForward();
+      }
+
+      // 广告拦截相关变量
+    // 强度级别：0-关闭, 1-弱(仅拦截导航), 2-中(导航+基本元素), 3-强(导航+元素+弹窗+Alert)
+    let adBlockLevel = parseInt(localStorage.getItem('adBlockLevel')) || 2;
+    const adDomains = [
+        'doubleclick.net',
+        'googleadservices.com',
+        'googlesyndication.com',
+        'adnxs.com',
+        'adsense.com',
+        'adroll.com',
+        'criteo.com',
+        'outbrain.com',
+        'taboola.com',
+        'adcolony.com',
+        'applovin.com',
+        'unityads.unity3d.com',
+        'vungle.com',
+        'inmobi.com',
+        'chartboost.com',
+        'facebook.com/tr',
+        'facebook.com/ads',
+        'ads.twitter.com',
+        'ads.pinterest.com'
+      ];
+
+      // 广告URL模式的source字符串数组，用于在JavaScript注入中直接使用
+      const adPatternSources = [
+        '\\/ads\\/',
+        '\\/advertising\\/',
+        '\\/ad\\/',
+        '\\/banner\\/',
+        '\\/promo\\/',
+        '\\/sponsored\\/',
+        '\\/popunder\\/',
+        '\\/pop-up\\/',
+        '\\/redirect\\/',
+        '\.ad\.',
+        '\.ads\.',
+        '\.doubleclick\.',
+        '\.googlesyndication\.',
+        '\.googleadservices\.',
+        '\.adnxs\.',
+        '\.criteo\.',
+        '\.outbrain\.',
+        '\.taboola\.'
+      ];
+
+      // 实际用于页面内检测的正则表达式对象数组
+      const adPatterns = adPatternSources.map(source => new RegExp(source));
+
+      // 检查URL是否为广告URL
+      function isAdUrl(url) {
+        try {
+          const parsedUrl = new URL(url);
+          const domain = parsedUrl.hostname;
+          
+          // 检查是否在广告域名列表中
+          for (const adDomain of adDomains) {
+            if (domain.includes(adDomain)) {
+              return true;
+            }
+          }
+          
+          // 检查是否匹配广告URL模式
+          for (const pattern of adPatterns) {
+            if (pattern.test(url)) {
+              return true;
+            }
+          }
+          
+          return false;
+        } catch (e) {
+          console.error('检查URL是否为广告时出错:', e);
+          return false;
+        }
+      }
+
+      ipcRenderer.on("load-url", (event, data) => {
+        // 防御性编程：处理可能的参数格式变化
+        let url = null;
+        let index = null;
+        
+        if (typeof data === 'object') {
+          // 新格式：接收对象参数
+          url = data.url;
+          index = data.index;
+        } else {
+          // 旧格式：兼容可能的直接参数传递
+          url = data;
+          index = arguments[2];
+        }
+        
+        console.log('加载URL:', url, '收藏项索引:', index);
+        
+        // 重置首次记录状态
+        isFirstPValueRecorded = false;
+        firstRecordedPValue = null;
+        
+        webview.src = url;
+        addressInput.value = url;
+
+        // 确保index是数字或null/undefined
+        if (index === undefined || index === null) {
+          currentFavoriteIndex = null;
+        } else {
+          currentFavoriteIndex = parseInt(index);
+          if (isNaN(currentFavoriteIndex)) {
+            currentFavoriteIndex = null;
+          }
+        }
+        
+        console.log('设置currentFavoriteIndex为:', currentFavoriteIndex);
+        
+        // 初始加载时也检测集数
+        if (currentFavoriteIndex !== null) {
+          detectAndSendEpisode(url, true); // true表示这是首次加载
+        }
+      });
+
+      // 返回按钮事件监听
+      backBtn.addEventListener("click", () => {
+        if (webview.canGoBack()) {
+          webview.goBack();
+        }
+      });
+
+      // 前进按钮事件监听
+      forwardBtn.addEventListener("click", () => {
+        if (webview.canGoForward()) {
+          webview.goForward();
+        }
+      });
+
+      // 刷新按钮事件监听
+      refreshBtn.addEventListener("click", () => {
+        webview.reload();
+      });
+
+      // 前往按钮事件监听
+      goBtn.addEventListener("click", () => {
+        const url = addressInput.value;
+        // 重置首次记录状态
+        isFirstPValueRecorded = false;
+        firstRecordedPValue = null;
+        if (url) {
+          webview.src = url;
+        }
+      });
+
+      // 地址输入框回车事件监听
+      addressInput.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          const url = addressInput.value;
+          // 重置首次记录状态
+          isFirstPValueRecorded = false;
+          firstRecordedPValue = null;
+          if (url) {
+            webview.src = url;
+          }
+        }
+      });
+
+      // 监听 webview 导航事件，更新按钮状态
+      webview.addEventListener("did-navigate-in-page", () => {
+        const currentUrl = webview.getURL();
+        //alert(currentUrl);
+        if (!currentUrl.startsWith("about:blank")) {
+          addressInput.value = currentUrl;
+
+          // 导航时检测B站和优酷的集数变化
+          // 移除条件判断，确保detectAndSendEpisode总是被调用
+          
+          // 在每次刷新时记录p=值并排除首次记录
+          detectAndSendEpisode(currentUrl, false); // false表示这不是首次加载
+        }
+        updateButtonState();
+      });
+
+      webview.addEventListener("did-navigate", () => {
+        const currentUrl = webview.getURL();
+
+        if (!currentUrl.startsWith("about:blank")) {
+          addressInput.value = currentUrl;
+          
+          // 导航时检测B站和优酷的集数变化
+          // 移除条件判断，确保detectAndSendEpisode总是被调用
+          detectAndSendEpisode(currentUrl, false);
+        }
+        updateButtonState();
+      });
+
+      // 检测B站和优酷的集数并发送到主进程
+      function detectAndSendEpisode(url, isInitialLoad) {
+        try {
+          // 直接显示URL，不依赖于currentFavoriteIndex的值
+          const parsedUrl = new URL(url);
+          const domain = parsedUrl.hostname;
+          const searchParams = parsedUrl.searchParams;
+          let episode = null;
+          let updatedUrl = url;
+          let platform = null;
+
+          // 检测B站集数
+          if (domain.includes('www.bilibili.com')) {
+            platform = 'bilibili';
+            console.log('检测B站URL:', url);
+            // 提取获取并解析p参数的逻辑
+            const pValue = searchParams.has('p') ? searchParams.get('p') : url.match(/[?&]p=([^&]+)|p=([^&]+)/)?.[1] || url.match(/[?&]p=([^&]+)|p=([^&]+)/)?.[2];
+            if (pValue) {
+              console.log('获取到B站p参数值:', pValue);
+              const parsedEpisode = parseInt(pValue);
+              console.log('解析后的p参数值:', parsedEpisode);
+              if (!isNaN(parsedEpisode) && parsedEpisode > 0) {
+                episode = parsedEpisode;
+                console.log('B站有效集数:', episode);
+
+                // 用于记录首次出现的p=值
+                if (isInitialLoad && !isFirstPValueRecorded) {
+                  isFirstPValueRecorded = true;
+                  firstRecordedPValue = episode;
+                  console.log('首次记录p值:', firstRecordedPValue);
+                }
+              } else {
+                console.log('B站p参数解析失败或不是有效正整数');
+              }
+            }
+
+            // 如果找到了集数，确保URL中包含正确的p参数
+            if (episode !== null) {
+              // 更新URL中的p参数，确保URL与集数同步
+              if (!searchParams.has('p') || parseInt(searchParams.get('p')) !== episode) {
+                searchParams.set('p', episode);
+                updatedUrl = parsedUrl.toString();
+                console.log('更新后的B站URL:', updatedUrl);
+              }
+            }
+          }
+          // 检测优酷集数
+          else if (domain.includes('youku.com')) {
+            platform = 'youku';
+            console.log('检测优酷URL:', url);
+            const getNumericValue = (str) => {
+              const match = str.match(/(\d+)$/);
+              return match ? parseInt(match[1]) : null;
+            };
+
+            if (searchParams.has('ep')) {
+              const parsedEpisode = getNumericValue(searchParams.get('ep'));
+              if (parsedEpisode && parsedEpisode > 0) {
+                episode = parsedEpisode;
+                console.log('优酷有效集数(从ep参数):', episode);
+
+                // 用于记录首次出现的集数
+                if (isInitialLoad && !isFirstPValueRecorded) {
+                  isFirstPValueRecorded = true;
+                  firstRecordedPValue = episode;
+                  console.log('首次记录优酷集数:', firstRecordedPValue);
+                }
+              }
+            } else if (searchParams.has('spm')) {
+              const spmValue = searchParams.get('spm');
+              const dParts = spmValue.split('.').find(part => part.startsWith('d_'))?.split('_');
+              if (dParts && dParts.length >= 3) {
+                const parsedEpisode = parseInt(dParts[2]);
+                if (!isNaN(parsedEpisode) && parsedEpisode > 0) {
+                  episode = parsedEpisode;
+                  console.log('优酷有效集数(从spm参数):', episode);
+
+                  // 用于记录首次出现的集数
+                  if (isInitialLoad && !isFirstPValueRecorded) {
+                    isFirstPValueRecorded = true;
+                    firstRecordedPValue = episode;
+                    console.log('首次记录优酷集数:', firstRecordedPValue);
+                  }
+                }
+              }
+            }
+
+            // 支持优酷视频的其他URL格式，如/sid_xxxxxx_x_x.html
+            if (episode === null) {
+              const sidMatch = url.match(/sid_(\w+)_(\d+)_(\d+)\.html/);
+              if (sidMatch && sidMatch.length >= 4) {
+                const parsedEpisode = parseInt(sidMatch[3]);
+                if (!isNaN(parsedEpisode) && parsedEpisode > 0) {
+                  episode = parsedEpisode;
+                  console.log('优酷有效集数(从URL路径):', episode);
+
+                  // 用于记录首次出现的集数
+                  if (isInitialLoad && !isFirstPValueRecorded) {
+                    isFirstPValueRecorded = true;
+                    firstRecordedPValue = episode;
+                    console.log('首次记录优酷集数:', firstRecordedPValue);
+                  }
+                }
+              }
+            }
+
+            // 如果找到了集数，确保URL中包含正确的参数
+            if (episode !== null && searchParams.has('ep')) {
+              const currentEpValue = searchParams.get('ep');
+              const currentEpNum = getNumericValue(currentEpValue);
+              if (currentEpNum !== episode) {
+                // 更新ep参数，保留原始格式但替换数字部分
+                const newEpValue = currentEpValue.replace(/\d+$/, episode);
+                searchParams.set('ep', newEpValue);
+                updatedUrl = parsedUrl.toString();
+                console.log('更新后的优酷URL:', updatedUrl);
+              }
+            }
+          }
+
+          // 如果检测到有效集数
+          if (episode !== null) {
+            // 首次加载时只记录但不保存
+            if (isInitialLoad && !isFirstPValueRecorded) {
+              isFirstPValueRecorded = true;
+              firstRecordedPValue = episode;
+              console.log('首次加载检测到集数，仅记录不保存:', episode);
+            } else if (!isInitialLoad) {
+              // 非首次加载（次刷）时执行保存逻辑
+              // 判断是否需要发送更新
+              let shouldSendUpdate = true;
+
+              // 获取上次记录的p值（如果有）
+              const lastRecordedPValue = currentFavoriteIndex !== null ? 
+                localStorage.getItem('lastRecordedPValue_' + currentFavoriteIndex) : null;
+
+              // 如果上次记录的p值存在且与当前检测到的p值相同，则跳过更新
+              if (lastRecordedPValue && parseInt(lastRecordedPValue) === episode) {
+                console.log('刷新时检测到与上次相同的p值，跳过发送更新:', episode);
+                shouldSendUpdate = false;
+              }
+
+              // 使用url的hash作为临时存储键，确保即使在currentFavoriteIndex为null时也能保存
+              const urlHash = updatedUrl.split('?')[0].split('#')[0];
+              const tempDownloadedKey = `tempDownloadedEpisodes_${encodeURIComponent(urlHash)}`;
+              const tempDownloadedEpisodes = JSON.parse(localStorage.getItem(tempDownloadedKey) || '[]');
+
+              if (!tempDownloadedEpisodes.includes(episode)) {
+                tempDownloadedEpisodes.push(episode);
+                localStorage.setItem(tempDownloadedKey, JSON.stringify(tempDownloadedEpisodes));
+                console.log(`${platform === 'bilibili' ? 'B站p值' : '优酷集数'}已保存到临时localStorage:`, episode);
+              }
+
+              // 当currentFavoriteIndex不为null时保存到downloadedEpisodes
+              if (currentFavoriteIndex !== null) {
+                // 保存到正式的localStorage键中
+                const downloadedKey = `downloadedEpisodes_${currentFavoriteIndex}`;
+                const downloadedEpisodes = JSON.parse(localStorage.getItem(downloadedKey) || '[]');
+                if (!downloadedEpisodes.includes(episode)) {
+                  downloadedEpisodes.push(episode);
+                  localStorage.setItem(downloadedKey, JSON.stringify(downloadedEpisodes));
+                  console.log(`${platform === 'bilibili' ? 'B站p值' : '优酷集数'}已保存到正式localStorage:`, episode);
+                }
+
+                // 如果需要发送更新消息
+                if (shouldSendUpdate) {
+                  console.log('准备发送update-watched-episode消息:', {
+                    index: currentFavoriteIndex,
+                    episode: episode,
+                    url: updatedUrl
+                  });
+                  ipcRenderer.send('update-watched-episode', {
+                    index: currentFavoriteIndex,
+                    episode: episode,
+                    url: updatedUrl
+                  });
+
+                  // 记录当前p值，用于下次比较
+                  localStorage.setItem('lastRecordedPValue_' + currentFavoriteIndex, episode);
+                }
+
+                // 保存成功后清理临时存储
+                localStorage.removeItem(tempDownloadedKey);
+              } else {
+                console.log('currentFavoriteIndex为null，已保存p值到临时存储，等待索引可用后同步:', episode);
+              }
+            }
+          }
+        } catch (e) {
+          console.error('检测集数时出错:', e);
+        }
+      }
+
+      webview.addEventListener("dom-ready", updateButtonState);
+
+      // 注入脚本彻底移除网页右键禁用
+      // 初始化广告拦截按钮状态
+      function initAdBlockButton() {
+        const adBlockBtn = document.getElementById('adBlockBtn');
+        const adBlockIcon = document.getElementById('adBlockIcon');
+        const adBlockCountElement = document.getElementById('adBlockCount');
+        
+        // 设置初始状态
+        updateAdBlockIcon();
+        
+        // 添加点击事件 - 切换强度级别
+        adBlockBtn.addEventListener('click', () => {
+          // 循环切换强度级别: 0 -> 1 -> 2 -> 3 -> 0
+          adBlockLevel = (adBlockLevel + 1) % 4;
+          localStorage.setItem('adBlockLevel', adBlockLevel);
+          updateAdBlockIcon();
+          
+          // 刷新当前页面以应用广告拦截设置
+          if (webview.src && !webview.src.startsWith('about:blank')) {
+            blockedAdsCount = 0; // 重置计数器
+            updateAdBlockCount(); // 更新显示
+            webview.reload();
+          }
+        });
+        
+        function updateAdBlockIcon() {
+        // 根据不同强度显示不同颜色和提示
+        switch(adBlockLevel) {
+          case 0:
+            adBlockIcon.style.fill = '#6b7280'; // 灰色表示关闭
+            adBlockBtn.title = '广告拦截已关闭';
+            adBlockBtn.setAttribute('data-level', 'off');
+            break;
+          case 1:
+            adBlockIcon.style.fill = '#f59e0b'; // 橙色表示弱
+            adBlockBtn.title = '广告拦截 (弱): 仅拦截广告导航';
+            adBlockBtn.setAttribute('data-level', 'low');
+            break;
+          case 2:
+            adBlockIcon.style.fill = '#3b82f6'; // 蓝色表示中
+            adBlockBtn.title = '广告拦截 (中): 拦截导航+基本广告元素';
+            adBlockBtn.setAttribute('data-level', 'medium');
+            break;
+          case 3:
+            adBlockIcon.style.fill = '#10b981'; // 绿色表示强
+            adBlockBtn.title = '广告拦截 (强): 拦截导航+元素+弹窗+Alert';
+            adBlockBtn.setAttribute('data-level', 'strong');
+            break;
+        }
+      }
+      }
+      
+      // 初始化广告拦截功能
+      initAdBlockButton();
+      // 立即更新广告拦截按钮状态，确保显示默认的中级强度
+      
+      // 拦截广告请求
+      function setupAdRequestInterceptor() {
+        // 监听webview的will-navigate事件
+        webview.addEventListener('will-navigate', (event) => {
+          // 级别1及以上拦截广告导航
+          if (adBlockLevel >= 1 && isAdUrl(event.url)) {
+            console.log('拦截广告导航:', event.url);
+            event.preventDefault();
+          }
+        });
+      }
+
+
+      
+      // 在webview初始化后设置广告拦截器
+      setupAdRequestInterceptor();
+      
+      webview.addEventListener("dom-ready", () => {
+        // 根据广告拦截强度级别注入不同的JavaScript
+        if (adBlockLevel >= 2) {
+          // 中强度或高强度级别，注入广告元素拦截脚本
+          webview.executeJavaScript(`
+            // 页面内广告元素选择器
+            const adSelectors = [
+              '[class*="ad"][class*="banner"]',
+              '[class*="ad"][class*="container"]',
+              '[class*="ad"][class*="slot"]',
+              '[id*="ad"][id*="banner"]',
+              '[id*="ad"][id*="container"]',
+              '[id*="ad"][id*="slot"]',
+              '.ad', '.ads', '.advertisement', '.advert', '.banner-ad',
+              '.sponsored', '.promoted', '.ad-container', '.ad-slot',
+              '.ad-wrapper', '.ad-banner', '.ad-unit', '.ad-space',
+              '.native-ad', '.video-ad', '.ad-block', '.ad-box',
+              '.ad-placeholder', '.ad-content', '.ad-section', '.ad-column',
+              '[data-ad]', '[data-ads]', '[data-ad-unit]', '[data-ad-slot]'
+            ];
+            
+            // 移除广告元素
+            function removeAdElements() {
+              adSelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                  try {
+                    element.style.display = 'none';
+                    element.style.visibility = 'hidden';
+                    // 记录被屏蔽的广告
+                    console.log('移除页面广告元素:', element.className || element.id);
+                  } catch (e) {
+                    console.error('移除广告元素时出错:', e);
+                  }
+                });
+              });
+            }
+            
+            // 立即执行一次
+            removeAdElements();
+            
+            // 设置定时器定期检查新出现的广告
+            setInterval(removeAdElements, 2000);
+            
+            // 监听DOM变化，动态移除新增的广告
+            const observer = new MutationObserver(removeAdElements);
+            observer.observe(document.body, {
+              childList: true,
+              subtree: true
+            });
+          `);
+        }
+        
+        if (adBlockLevel === 3) {
+          // 高强度级别，额外注入弹窗和Alert拦截
+          webview.executeJavaScript(`
+            // 阻止广告弹窗
+            window.open = function() {
+              console.log('阻止弹窗:', arguments[0]);
+
+              return null;
+            };
+            
+            // 覆盖alert和confirm函数，防止广告干扰
+            const originalAlert = window.alert;
+            const originalConfirm = window.confirm;
+            
+            window.alert = function(message) {
+              console.log('拦截alert:', message);
+
+            };
+            
+            window.confirm = function(message) {
+              console.log('拦截confirm:', message);
+
+              return false; // 默认拒绝
+            };
+          `);
+        }
+      });
+
+      // 处理外部链接点击（新窗口）
+      webview.addEventListener("new-window", (event) => {
+        event.preventDefault();
+        ipcRenderer.send("open-new-window", event.url);
+      });
+
+      // 右键菜单处理（复制地址）
+      const { Menu, MenuItem, clipboard } = require("electron").remote;
+      webview.addEventListener("contextmenu", (event) => {
+        const target = event.target;
+        // 检查是否是链接元素
+        if (target.tagName === "A" && target.href) {
+          const url = target.href;
+          const menu = new Menu();
+          menu.append(
+            new MenuItem({
+              label: globalTranslations[getCurrentLanguage()]['copyAddress'] || '复制地址',
+              click: () => clipboard.writeText(url),
+            })
+          );
+          menu.popup();
+        }
+      });
+
+      // 处理文件下载请求
+      webview.addEventListener("will-download", (event, item) => {
+        ipcRenderer.send("handle-download", item.getURL(), item.getFilename());
+      });
+
+      // 初始化按钮状态
+      updateButtonState();
+
+      // 读取并应用保存的主题
+      const savedTheme = localStorage.getItem('theme') || 'default';
+      if (savedTheme !== 'default') {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    </script>
+  </body>
+</html>

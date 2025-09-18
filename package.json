@@ -1,0 +1,102 @@
+{
+  "name": "favorites-browser",
+  "version": "1.0.3",
+  "description": "这是一个使用 Electron 构建的 Favorites browser 应用",
+  "author": "收藏夹记事本",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "build": "npm run dist"
+  },
+  "devDependencies": {
+    "electron": "^37.5.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.favoritesbrowser",
+    "productName": "收藏夹记事本",
+    "icon": "build/icons/icon.ico",
+    "electronLanguages": [
+      "en",
+      "zh-CN"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "appx",
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icons/icon.ico",
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "收藏夹记事本",
+      "installerIcon": "build/icons/icon.ico",
+      "uninstallerIcon": "build/icons/icon.ico",
+      "installerHeaderIcon": "build/icons/icon.ico",
+      "runAfterFinish": true,
+      "include": "build/installer.nsh",
+      "perMachine": true
+    },
+    "appx": {
+      "applicationId": "FavoritesBrowser",
+      "publisherDisplayName": "胡岳超",
+      "publisher": "CN=9ECF63E0-9566-4BD1-B64C-C2B0B581655B",
+      "identityName": "0C75723A.favorites-browser-app-msix",
+      "displayName": "收藏夹记事本"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "build/icons/icon.png",
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "snap"
+      ],
+      "icon": "build/icons",
+      "category": "Utility",
+      "desktop": {
+        "entry": {
+          "Name": "收藏夹记事本",
+          "Comment": "这是一个使用 Electron 构建的 Favorites browser 应用"
+        }
+      }
+    },
+    "defaultArch": "x64",
+    "extraResources": [
+      "build/icons/**/*",
+      "harmonyos-build-guide.md",
+      "linux-build-guide.md",
+      "macos-build-guide.md",
+      "privacy-policy.md"
+    ],
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://github.com/samson7s/favorites-browser/releases/"
+      }
+    ]
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.1"
+  }
+}

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>编辑集数</title>
+    <link rel="icon" type="image/x-icon" href="build/icons/icon.ico">
+    <link rel="icon" type="image/png" href="build/icons/icon.png">
+    <link rel="stylesheet" href="colors.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="language.js"></script>
+    <script src="utils.js"></script>
+    <style>
+        body {
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            font-family: sans-serif;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+            background-color: var(--background-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 5px;
+        }
+
+        .input-group input {
+            flex: 1;
+        }
+
+        .input-group button {
+            width: 30px;
+            padding: 5px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .input-group button:hover {
+            background-color: var(--primary-hover-color);
+        }
+
+        .input-group button:active {
+            background-color: var(--primary-active-color);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-background);
+            color: var(--text-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 10px;
+            margin: 3px 0 0 8px;
+            padding: 0;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cancel-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-weight: 500;
+        }
+
+        .cancel-btn:hover {
+                background-color: var(--secondary-hover-color);
+                color: var(--button-text-light);
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+        .cancel-btn:active {
+            transform: translateY(0);
+        }
+
+        .confirm-btn {
+            background-color: var(--primary-color);
+            color: var(--button-text-light);
+            border: none;
+            border-radius: 6px;
+            padding: 12px 28px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.3);
+        }
+
+        .confirm-btn:hover {
+                background-color: var(--primary-hover-color) !important;
+                color: var(--button-text-light);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.4);
+            }
+
+        .confirm-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.3);
+            background-color: var(--primary-hover-color);
+            color: var(--button-text-light);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLanguage();
+        });
+    </script>
+    <div class="container">
+        <div class="form-group">
+            <label for="totalEpisodes" data-i18n="totalEpisodes">总集数:</label>
+            <div class="input-group">
+                <input type="text" id="totalEpisodes" placeholder="请输入总集数" data-i18n-placeholder="enterTotalEpisodes">
+                <div>
+                    <button type="button" class="number-btn" data-target="totalEpisodes" data-step="1">↑</button>
+                    <button type="button" class="number-btn" data-target="totalEpisodes" data-step="-1">↓</button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="downloadedEpisodes" data-i18n="downloadedEpisodes">已下载集数:</label>
+            <div class="input-group">
+                <input type="text" id="downloadedEpisodes" placeholder="请输入已下载集数" data-i18n-placeholder="enterDownloadedEpisodes">
+                <div>
+                    <button type="button" class="number-btn" data-target="downloadedEpisodes" data-step="1">↑</button>
+                    <button type="button" class="number-btn" data-target="downloadedEpisodes" data-step="-1">↓</button>
+                </div>
+            </div>
+            <div id="error-message" class="error-message"></div>
+        </div>
+        <div class="button-group">
+            <button id="cancelBtn" class="cancel-btn" data-i18n="cancel">取消</button>
+            <button id="confirmBtn" class="confirm-btn" data-i18n="confirm">确认</button>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        // 存储当前编辑项的URL
+        let currentItemUrl = '';
+        
+        // 数字增减按钮逻辑
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('number-btn')) {
+                const targetId = e.target.dataset.target;
+                const step = parseInt(e.target.dataset.step);
+                const input = document.getElementById(targetId);
+                const currentValue = parseInt(input.value) || 0;
+                let newValue = currentValue + step;
+
+                // 对已下载集数进行特殊处理
+                if (targetId === 'downloadedEpisodes') {
+                    const totalValue = parseInt(document.getElementById('totalEpisodes').value) || 0;
+                    newValue = Math.max(0, newValue); // 确保不小于0
+                    if (totalValue > 0) {
+                        newValue = Math.min(totalValue, newValue); // 总集数大于0时不超过总集数
+                    }
+                } else {
+                    newValue = Math.max(0, newValue); // 总集数确保不小于0
+                }
+
+                input.value = newValue;
+            }
+        });
+
+        const totalInput = document.getElementById('totalEpisodes');
+        const downloadedInput = document.getElementById('downloadedEpisodes');
+        let itemIndex;
+
+        // 接收初始值
+        ipcRenderer.on('set-episode-values', (event, { total, downloaded, index, url }) => {
+            totalInput.value = total || 0;
+            downloadedInput.value = downloaded || 0;
+            itemIndex = index;
+            currentItemUrl = url || '';
+            
+            // 如果URL是优酷视频，自动提取集数信息作为默认值
+            if (currentItemUrl && isVideoPlatformUrl(currentItemUrl)) {
+                try {
+                    const parsedUrl = new URL(currentItemUrl);
+                    const domain = parsedUrl.hostname;
+                    
+                    if (domain.includes('youku.com')) {
+                        const searchParams = parsedUrl.searchParams;
+                        if (searchParams.has('spm')) {
+                            try {
+                                const spmValue = searchParams.get('spm');
+                                if (spmValue && typeof spmValue === 'string') {
+                                    // 寻找包含'd_'的部分，例如'd_1_2'
+                                    const spmParts = spmValue.split('.');
+                                    // 过滤出包含'd_'的部分
+                                    const dPart = spmParts.find(part => part.startsWith('d_'));
+                                    
+                                    if (dPart) {
+                                        // 解析d_1_2格式，提取集数（第二个数字）
+                                        const dParts = dPart.split('_');
+                                        if (dParts.length >= 3) {
+                                            const episodeNumber = dParts[2];
+                                            // 确保集数是有效的数字
+                                            if (episodeNumber && !isNaN(episodeNumber) && isFinite(episodeNumber) && parseInt(episodeNumber) > 0) {
+                                                // 只有当downloadedEpisodes为0时才自动填充，避免覆盖用户已设置的值
+                                                if (downloaded === 0) {
+                                                    downloadedInput.value = parseInt(episodeNumber);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('解析优酷URL的spm参数时出错:', e);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('解析URL时出错:', e);
+                }
+            }
+        });
+
+        ipcRenderer.on('episode-dialog-error', (event, message) => {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        });
+
+        ipcRenderer.on('episode-dialog-success', () => {
+            window.close();
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', () => {
+            try {
+                ipcRenderer.send('episode-dialog-cancel');
+            } catch (error) {
+                const errorElement = document.getElementById('error-message');
+                const currentLanguage = getCurrentLanguage();
+                errorElement.textContent = globalTranslations[currentLanguage]['cancelOperationFailed'] || '取消操作失败: ' + (error.message || globalTranslations[currentLanguage]['unknownError'] || '未知错误');
+                errorElement.style.display = 'block';
+            }
+        });
+
+        // 读取并应用保存的主题
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        if (savedTheme !== 'default') {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        ipcRenderer.on('episode-dialog-canceled', () => {
+            window.close();
+        });
+
+        document.getElementById('confirmBtn').addEventListener('click', () => {
+            const totalStr = totalInput.value.trim();
+            const downloadedStr = downloadedInput.value.trim();
+            const numericRegex = /^\d*$/;
+            const errorElement = document.getElementById('error-message');
+            const currentLanguage = getCurrentLanguage();
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+
+            if (!numericRegex.test(totalStr)) {
+                errorElement.textContent = globalTranslations[currentLanguage]['totalEpisodesOnlyNumbers'] || '总集数只能包含数字';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (!numericRegex.test(downloadedStr)) {
+                errorElement.textContent = globalTranslations[currentLanguage]['downloadedEpisodesOnlyNumbers'] || '已下载集数只能包含数字';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            const total = totalStr ? parseInt(totalStr, 10) : 0;
+            const downloaded = downloadedStr ? parseInt(downloadedStr, 10) : 0;
+
+            if (isNaN(total)) {
+                errorElement.textContent = globalTranslations[currentLanguage]['totalEpisodesValidNumber'] || '总集数必须是有效的数字';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (total < 0) {
+                errorElement.textContent = globalTranslations[currentLanguage]['totalEpisodesValidNonNegative'] || '总集数必须是有效的非负整数';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (isNaN(downloaded)) {
+                errorElement.textContent = globalTranslations[currentLanguage]['downloadedEpisodesValidNumber'] || '已下载集数必须是有效的数字';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            if (downloaded < 0) {
+                errorElement.textContent = globalTranslations[currentLanguage]['downloadedEpisodesValidNonNegative'] || '已下载集数必须是有效的非负整数';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // 仅当总集数大于0且已下载集数为0时才显示错误
+            if (total > 0 && downloaded === 0) {
+                errorElement.textContent = globalTranslations[currentLanguage]['enterDownloadedEpisodes'] || '请输入已下载集数';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // 仅当总集数大于0时才检查已下载集数不能超过总集数
+            if (total > 0 && downloaded > total) {
+                errorElement.textContent = globalTranslations[currentLanguage]['downloadedEpisodesCannotExceedTotal'] || '已下载集数不能大于总集数';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            // 检查当前URL是否需要更新集数参数
+            let updatedUrl = currentItemUrl;
+            
+            if (currentItemUrl && isVideoPlatformUrl(currentItemUrl)) {
+                try {
+                    const parsedUrl = new URL(currentItemUrl);
+                    const domain = parsedUrl.hostname;
+                    
+                    if (domain.includes('youku.com')) {
+                        // 使用utils.js中的函数更新URL中的集数参数
+                        updatedUrl = updateEpisodeInURL(currentItemUrl, downloaded);
+                    }
+                } catch (e) {
+                    console.error('更新URL时出错:', e);
+                }
+            }
+            
+            // 发送确认消息并关闭窗口
+            ipcRenderer.send('episode-dialog-confirm', {
+                total: total,
+                downloaded: downloaded,
+                index: itemIndex,
+                url: updatedUrl
+            });
+        });
+    </script>
+</body>
+</html>

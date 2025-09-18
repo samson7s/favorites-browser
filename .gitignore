@@ -1,0 +1,88 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+dist
+dist-ssr
+build
+*.local
+
+# Electron-related large files
+node_modules/electron
+electron.zip
+electron.exe
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing
+coverage
+*.lcov
+
+# Temporary files
+*.tmp
+*.temp
+.cache
+
+# OS generated files
+Thumbs.db
+
+# Trash directory
+trash_can/
+
+# Documentation files
+*.md
+!README.md
+!LICENSE
+
+# Executable files
+*.exe
+*.appx
+*.asar
+*.msi
+*.dmg
+*.pkg
+
+# Compressed files
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+
+# Build guide files
+build/*.plist
+build/*.nsh
+build/icons/

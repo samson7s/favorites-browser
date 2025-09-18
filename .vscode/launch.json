@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Electron App",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}\\node_modules\\.bin\\electron.cmd",  // Windows下Electron执行路径
+      "runtimeArgs": [
+        "${workspaceFolder}\\main.js"  // 指定主进程文件
+      ],
+      "env": {
+        "ELECTRON_ENABLE_LOGGING": "true"  // 可选：启用Electron日志
+      }
+    }
+  ]
+}
