@@ -15,7 +15,6 @@ globalTranslations = {
     'interfaceLanguage': '界面语言',
     'languageSetTo': '语言已设置为%s',
     'languageSettingTitle': '语言设置',
-    'interfaceLanguage': '界面语言',
     'simplifiedChinese': '简体中文',
     'english': 'English',
     'searchPlaceholder': '搜索收藏...',
@@ -188,7 +187,6 @@ globalTranslations = {
     'interfaceLanguage': 'Interface Language',
     'languageSetTo': 'Language set to %s',
     'languageSettingTitle': 'Language Settings',
-    'interfaceLanguage': 'Interface Language',
     'simplifiedChinese': 'Simplified Chinese',
     'english': 'English',
     'searchPlaceholder': 'Search favorites...',
@@ -351,10 +349,7 @@ globalTranslations = {
 function updateLanguageSelection(language, languageOptions) {
   if (languageOptions && languageOptions.length > 0) {
     languageOptions.forEach((option) => {
-      option.classList.toggle(
-        "active",
-        option.dataset.language === language
-      );
+      option.classList.toggle("active", option.dataset.language === language);
       // 添加选中样式
       if (option.classList.contains('active')) {
         option.style.borderColor = 'var(--primary-color)';
@@ -368,17 +363,17 @@ function updateLanguageSelection(language, languageOptions) {
 }
 
 // 更新页面标题
-  function updatePageTitle(language) {
-    const pageSpecificTitles = {
-      'add-dialog.html': 'addDialogTitle',
-      'edit-dialog.html': 'editDialogTitle',
-      'username-dialog.html': 'usernameDialogTitle',
-      'episode-dialog.html': 'episodeTitle',
-      'about.html': 'aboutTitle',
-      'favorite.html': 'favoritesTitle',
-      'custom-window.html': 'customWindowTitle'
-    };
-  
+function updatePageTitle(language) {
+  const pageSpecificTitles = {
+    'add-dialog.html': 'addDialogTitle',
+    'edit-dialog.html': 'editDialogTitle',
+    'username-dialog.html': 'usernameDialogTitle',
+    'episode-dialog.html': 'episodeTitle',
+    'about.html': 'aboutTitle',
+    'favorite.html': 'favoritesTitle',
+    'custom-window.html': 'customWindowTitle'
+  };
+
   const currentPage = window.location.pathname.split('/').pop();
   if (pageSpecificTitles[currentPage]) {
     document.title = globalTranslations[language][pageSpecificTitles[currentPage]] || globalTranslations[language]['appTitle'] || '收藏夹记事本';
@@ -390,7 +385,7 @@ function updateLanguageSelection(language, languageOptions) {
 // 更新页面上的所有翻译元素
 function updatePageTranslations(language) {
   // 更新所有有data-i18n属性的元素
-  document.querySelectorAll('[data-i18n]').forEach(element => {
+  document.querySelectorAll('[data-i18n]').forEach((element) => {
     const key = element.dataset.i18n;
     if (globalTranslations[language][key]) {
       // 对于包含HTML的特殊键，使用innerHTML
@@ -401,65 +396,65 @@ function updatePageTranslations(language) {
       }
     }
   });
-  
+
   // 更新placeholder属性
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((element) => {
     const key = element.dataset.i18nPlaceholder;
     if (globalTranslations[language][key]) {
       element.placeholder = globalTranslations[language][key];
     }
   });
-  
+
   // 更新title属性
-  document.querySelectorAll('[data-i18n-title]').forEach(element => {
+  document.querySelectorAll('[data-i18n-title]').forEach((element) => {
     const key = element.dataset.i18nTitle;
     if (globalTranslations[language][key]) {
       element.title = globalTranslations[language][key];
     }
   });
-  
+
   // 更新按钮文本
   const buttonsToUpdate = {
-    //排除'#addBtn': 'addFavorite',
+    // 排除'#addBtn': 'addFavorite',
     '#copyBtn': 'copy',
     '.copy-btn': 'copy',
     '.cancel-btn': 'cancel',
     '.confirm-btn': 'confirm'
   };
-  
+
   Object.entries(buttonsToUpdate).forEach(([selector, key]) => {
     const elements = document.querySelectorAll(selector);
-    elements.forEach(element => {
+    elements.forEach((element) => {
       if (globalTranslations[language][key]) {
         element.textContent = globalTranslations[language][key];
       }
     });
   });
-  
+
   // 更新搜索框占位符
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.placeholder = globalTranslations[language]['searchPlaceholder'] || '搜索收藏...';
   }
-  
+
   // 更新地址栏占位符
   const addressInput = document.getElementById('addressInput');
   if (addressInput) {
     addressInput.placeholder = globalTranslations[language]['addressPlaceholder'] || '输入地址';
   }
-  
+
   // 更新前往按钮
   const goBtn = document.getElementById('goBtn');
   if (goBtn) {
     goBtn.textContent = globalTranslations[language]['go'] || '前往';
   }
-  
+
   // 更新收藏列表标题（如果没有设置data-i18n属性）
   const listTitle = document.querySelector('h1:not([data-i18n])');
   if (listTitle && listTitle.textContent.includes('Bookmark List')) {
     listTitle.textContent = globalTranslations[language]['bookmarkList'] || '收藏列表';
   }
-  
+
   // 特殊处理：更新当前用户显示（即使它没有data-i18n属性）
   const currentUserDisplay = document.getElementById('currentUserDisplay');
   if (currentUserDisplay && currentUserDisplay.style.display !== 'none') {
@@ -472,7 +467,7 @@ function updatePageTranslations(language) {
       currentUserDisplay.textContent = `${userLabel}${username}`;
     }
   }
-  
+
   // 特殊处理：重新渲染收藏列表，确保列表区域的语言也更新
   if (window.favorites && Array.isArray(window.favorites) && typeof window.renderFavorites === 'function') {
     window.renderFavorites(window.favorites);

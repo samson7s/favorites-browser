@@ -10,16 +10,21 @@
   </head>
   <body>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeLanguage();
-        });
+      document.addEventListener('DOMContentLoaded', function () {
+        initializeLanguage();
+      });
     </script>
     <div class="header">
       <div style="display: flex; align-items: center;">
-        <img src="assets/images/logo.svg" alt="Logo" class="app-logo" style="margin-right: 3px; margin-left: -5px; width: 40px; height: 40px;">
-        <h1 data-i18n="appTitle" style="font-size: 18px; user-select: none;"></h1>
+        <img
+          src="assets/images/logo.svg"
+          alt="Logo"
+          class="app-logo"
+          style="margin-right: 3px; margin-left: -5px; width: 40px; height: 40px"
+        />
+        <h1 data-i18n="appTitle" style="font-size: 18px; user-select: none"></h1>
       </div>
-      <div style="display: flex; gap: 10px; align-items: center;">
+      <div style="display: flex; gap: 10px; align-items: center">
         <div class="search-container small-search">
           <input
             type="text"
@@ -47,10 +52,12 @@
       <div class="tabs">
         <div class="tab-buttons">
           <button class="tab-btn active" data-tab="downloading">
-            <span data-i18n="downloadingTab"></span><span class="tab-count">(0)</span>
+            <span data-i18n="downloadingTab"></span
+            ><span class="tab-count">(0)</span>
           </button>
           <button class="tab-btn" data-tab="downloaded">
-            <span data-i18n="downloadedTab"></span><span class="tab-count">(0)</span>
+            <span data-i18n="downloadedTab"></span
+            ><span class="tab-count">(0)</span>
           </button>
         </div>
         <div class="tab-content active" id="downloadingList"></div>
@@ -59,7 +66,9 @@
     </div>
     <div class="settings-view" id="settingsView">
       <div class="container">
-        <button class="back-btn" id="backBtn">← <span data-i18n="backButton">返回</span></button>
+        <button class="back-btn" id="backBtn">
+          ← <span data-i18n="backButton">返回</span>
+        </button>
         <h2 data-i18n="settingsTitle">设置</h2>
         <div class="settings-content">
           <!-- 用户管理卡片 -->
@@ -70,23 +79,32 @@
             <div class="settings-card-content">
               <div class="settings-item">
                 <div class="user-selection" id="userSelection">
-                  <select id="userSelect" style="display: none;
-                    background-color: var(--card-color);
-                    color: var(--text-color);
-                    padding: 8px 12px;
-                    border: 1px solid var(--border-color);
-                    border-radius: 6px;
-                    font-size: 14px;
-                  ">
+                  <select
+                    id="userSelect"
+                    style="
+                      display: none;
+                      background-color: var(--card-color);
+                      color: var(--text-color);
+                      padding: 8px 12px;
+                      border: 1px solid var(--border-color);
+                      border-radius: 6px;
+                      font-size: 14px;
+                    "
+                  >
                     <option value="default">Default</option>
                   </select>
-                  <div id="currentUserDisplay" style="
-                    display: flex;
-                    align-items: center;
-                  " data-i18n="usernameLoading">用户名：加载中...</div>
+                  <div
+                    id="currentUserDisplay"
+                    style="display: flex; align-items: center"
+                    data-i18n="usernameLoading"
+                  >
+                    用户名：加载中...
+                  </div>
                   <button
                     id="switchUserBtn"
-                    style="display: none; margin-left: 10px;
+                    style="
+                      display: none;
+                      margin-left: 10px;
                       background-color: var(--primary-color);
                       color: white;
                       border: none;
@@ -95,27 +113,38 @@
                       cursor: pointer;
                       font-size: 14px;
                     "
-                  data-i18n="switchUser">
+                    data-i18n="switchUser"
+                  >
                     切换用户
                   </button>
                 </div>
               </div>
-              
+
               <div class="settings-item">
-                <label class="settings-label" data-i18n="userManagement">管理用户:</label>
-                <div class="user-management" style="display: flex; gap: 10px;">
-                  <button id="addUserBtn" style="
-                    background-color: var(--accent-color);
-                    color: white;
-                    border: none;
-                    padding: 8px 16px;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    transition: background-color 0.3s ease;" data-i18n="addUser">添加用户</button>
+                <label class="settings-label" data-i18n="userManagement">
+                  管理用户:
+                </label>
+                <div class="user-management" style="display: flex; gap: 10px">
+                  <button
+                    id="addUserBtn"
+                    style="
+                      background-color: var(--accent-color);
+                      color: white;
+                      border: none;
+                      padding: 8px 16px;
+                      border-radius: 6px;
+                      cursor: pointer;
+                      font-size: 14px;
+                      transition: background-color 0.3s ease;
+                    "
+                    data-i18n="addUser"
+                  >
+                    添加用户
+                  </button>
                   <button
                     id="removeUserBtn"
-                    style="margin-left: 0;
+                    style="
+                      margin-left: 0;
                       background-color: var(--error-color);
                       color: white;
                       border: none;
@@ -123,12 +152,17 @@
                       border-radius: 6px;
                       cursor: pointer;
                       font-size: 14px;
-                      transition: background-color 0.3s ease;" data-i18n="removeUser">移除用户</button>
+                      transition: background-color 0.3s ease;
+                    "
+                    data-i18n="removeUser"
+                  >
+                    移除用户
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <!-- 用户管理脚本 -->
           <script>
             // 用户管理功能实现
@@ -215,10 +249,11 @@
                   currentUserDisplay.style.display = "block";
                   // 保持data-i18n属性，正确设置用户名字符串
                   const language = getCurrentLanguage();
-                  const userLabel = globalTranslations[language]['currentUser'] || '当前用户: ';
+                  const userLabel =
+                    globalTranslations[language]["currentUser"] || "当前用户: ";
                   currentUserDisplay.textContent = `${userLabel}${currentUser}`;
                   // 移除之前的data-i18n属性，因为现在显示的是用户名而不是加载状态
-                  currentUserDisplay.removeAttribute('data-i18n');
+                  currentUserDisplay.removeAttribute("data-i18n");
                 }
               }
 
@@ -249,7 +284,10 @@
                   ipcRenderer.send("add-user", trimmedUsername);
                 } else if (username && users.includes(username.trim())) {
                   const language = getCurrentLanguage();
-                  alert(globalTranslations[language]['usernameExists'] || '该用户名已存在，请使用其他用户名');
+                  alert(
+                    globalTranslations[language]["usernameExists"] ||
+                      "该用户名已存在，请使用其他用户名"
+                  );
                 }
               });
 
@@ -257,16 +295,27 @@
               removeUserBtn.addEventListener("click", function () {
                 const language = getCurrentLanguage();
                 if (users.length <= 1) {
-                  alert(globalTranslations[language]['keepAtLeastOneUser'] || '至少保留一个用户');
+                  alert(
+                    globalTranslations[language]["keepAtLeastOneUser"] ||
+                      "至少保留一个用户"
+                  );
                   return;
                 }
                 const userToRemove = userSelect.value;
                 if (userToRemove === "Default") {
-                  alert(globalTranslations[language]['cannotRemoveDefaultUser'] || '不能移除默认用户');
+                  alert(
+                    globalTranslations[language]["cannotRemoveDefaultUser"] ||
+                      "不能移除默认用户"
+                  );
                   return;
                 }
                 // 弹出确认提示，支持占位符替换
-                const confirmMsg = (globalTranslations[language]['confirmRemoveUser'] || '确定要删除用户"%s"及其实时数据吗？').replace('%s', userToRemove);
+                const confirmMsg =
+                  (globalTranslations[language]["confirmRemoveUser"] ||
+                    '确定要删除用户"%s"及其实时数据吗？').replace(
+                    "%s",
+                    userToRemove
+                  );
                 if (!confirm(confirmMsg)) {
                   return;
                 }
@@ -280,13 +329,14 @@
                       // 移除用户后，将当前用户设置为默认用户
                       const defaultUserIndex = users.indexOf("Default");
                       currentUser =
-                        defaultUserIndex > -1
-                          ? "Default"
-                          : users[0];
+                        defaultUserIndex > -1 ? "Default" : users[0];
                       updateUserDisplay();
                     } else {
                       const language = getCurrentLanguage();
-                      alert(globalTranslations[language]['removeUserFailed'] || '移除用户失败，请重试');
+                      alert(
+                        globalTranslations[language]["removeUserFailed"] ||
+                          "移除用户失败，请重试"
+                      );
                     }
                   });
               });
@@ -303,30 +353,42 @@
             </div>
             <div class="settings-card-content">
               <div class="settings-item">
-                <label class="settings-label" for="windowMode" data-i18n="windowMode">启动窗口模式:</label>
-                <select id="windowMode" style="
-                  width: 100%;
-                  max-width: 200px;
-                  background-color: var(--card-color);
-                  color: var(--text-color);
-                  padding: 8px 12px;
-                  border: 1px solid var(--border-color);
-                  border-radius: 6px;
-                  font-size: 14px;
-                ">
+                <label class="settings-label" for="windowMode" data-i18n="windowMode">
+                  启动窗口模式:
+                </label>
+                <select
+                  id="windowMode"
+                  style="
+                    width: 100%;
+                    max-width: 200px;
+                    background-color: var(--card-color);
+                    color: var(--text-color);
+                    padding: 8px 12px;
+                    border: 1px solid var(--border-color);
+                    border-radius: 6px;
+                    font-size: 14px;
+                  "
+                >
                   <option value="normal" data-i18n="normalWindow">窗口模式</option>
-                  <option value="maximized" data-i18n="maximizedWindow">最大化模式</option>
+                  <option value="maximized" data-i18n="maximizedWindow">
+                    最大化模式
+                  </option>
                 </select>
               </div>
 
               <div class="settings-item">
-                <label class="settings-label" data-i18n="themeSelection">主题选择</label>
-                <div class="theme-selector" style="
-                  display: flex;
-                  gap: 12px;
-                  flex-wrap: wrap;
-                  padding: 10px 0;
-                ">
+                <label class="settings-label" data-i18n="themeSelection">
+                  主题选择
+                </label>
+                <div
+                  class="theme-selector"
+                  style="
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    padding: 10px 0;
+                  "
+                >
                   <div
                     class="theme-option"
                     data-theme="default"
@@ -340,9 +402,9 @@
                       transition: all 0.3s ease;
                       border: 2px solid transparent;
                       background-color: #2563eb;
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    ">
-                  </div>
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+                  ></div>
                   <div
                     class="theme-option"
                     data-theme="dark"
@@ -356,9 +418,9 @@
                       transition: all 0.3s ease;
                       border: 2px solid transparent;
                       background-color: #0f172a;
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    ">
-                  </div>
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+                  ></div>
                   <div
                     class="theme-option"
                     data-theme="blue"
@@ -372,9 +434,9 @@
                       transition: all 0.3s ease;
                       border: 2px solid transparent;
                       background-color: #1e40af;
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    ">
-                  </div>
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+                  ></div>
                   <div
                     class="theme-option"
                     data-theme="green"
@@ -388,9 +450,9 @@
                       transition: all 0.3s ease;
                       border: 2px solid transparent;
                       background-color: #059669;
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    ">
-                  </div>
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+                  ></div>
                   <div
                     class="theme-option"
                     data-theme="purple"
@@ -404,10 +466,9 @@
                       transition: all 0.3s ease;
                       border: 2px solid transparent;
                       background-color: #6b21a8;
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    
-                    ">
-                  </div>
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+                  ></div>
                   <div
                     class="theme-option"
                     data-theme="orange"
@@ -421,10 +482,9 @@
                       transition: all 0.3s ease;
                       border: 2px solid transparent;
                       background-color: #c2410c;
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    
-                    ">
-                  </div>
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+                  ></div>
                 </div>
               </div>
             </div>
@@ -474,12 +534,13 @@
                       option.dataset.theme === theme
                     );
                     // 添加选中动画效果
-                    if (option.classList.contains('active')) {
-                      option.style.transform = 'scale(1.1)';
-                      option.style.boxShadow = `0 0 0 3px var(--card-color), 0 0 0 5px var(--primary-color)`;
+                    if (option.classList.contains("active")) {
+                      option.style.transform = "scale(1.1)";
+                      option.style.boxShadow =
+                        "0 0 0 3px var(--card-color), 0 0 0 5px var(--primary-color)";
                     } else {
-                      option.style.transform = 'scale(1)';
-                      option.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                      option.style.transform = "scale(1)";
+                      option.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
                     }
                   });
                 }
@@ -498,8 +559,11 @@
                     // 显示临时通知 - 国际化处理
                     const notification = document.createElement("div");
                     const currentLang = getCurrentLanguage();
-                    const themeText = theme.charAt(0).toUpperCase() + theme.slice(1);
-                    notification.textContent = globalTranslations[currentLang]['themeSwitched'].replace('%s', themeText);
+                    const themeText =
+                      theme.charAt(0).toUpperCase() + theme.slice(1);
+                    notification.textContent = globalTranslations[currentLang][
+                      "themeSwitched"
+                    ].replace("%s", themeText);
                     notification.style.position = "fixed";
                     notification.style.top = "20px";
                     notification.style.left = "50%";
@@ -524,13 +588,18 @@
             </div>
             <div class="settings-card-content">
               <div class="settings-item">
-                <label class="settings-label" data-i18n="interfaceLanguage">界面语言</label>
-                <div class="language-selector" style="
-                  display: flex;
-                  gap: 12px;
-                  flex-wrap: wrap;
-                  padding: 10px 0;
-                ">
+                <label class="settings-label" data-i18n="interfaceLanguage">
+                  界面语言
+                </label>
+                <div
+                  class="language-selector"
+                  style="
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    padding: 10px 0;
+                  "
+                >
                   <div
                     class="language-option"
                     data-language="zh-CN"
@@ -542,8 +611,10 @@
                       border: 2px solid transparent;
                       background-color: var(--card-color);
                       color: var(--text-color);
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    " data-i18n="simplifiedChinese">
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+                    data-i18n="simplifiedChinese"
+                  >
                     简体中文
                   </div>
                   <div
@@ -557,8 +628,10 @@
                       border: 2px solid transparent;
                       background-color: var(--card-color);
                       color: var(--text-color);
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    " data-i18n="english">
+                      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    "
+                    data-i18n="english"
+                  >
                     English
                   </div>
                 </div>
@@ -572,46 +645,57 @@
             document.addEventListener("DOMContentLoaded", function () {
               // 获取所有语言选项
               const languageOptions = document.querySelectorAll(".language-option");
-              
+
               // 获取保存的语言或使用默认语言
               // 保持与全局函数兼容，使用相同的localStorage键
-              const savedLanguage = localStorage.getItem("preferredLanguage") || "zh-CN";
-              
+              const savedLanguage =
+                localStorage.getItem("preferredLanguage") || "zh-CN";
+
               // 如果之前使用了"language"键，迁移数据
               const oldLanguage = localStorage.getItem("language");
               if (oldLanguage && !savedLanguage) {
                 localStorage.setItem("preferredLanguage", oldLanguage);
               }
-              
+
               // 初始化语言选择
               updateLanguageSelection(savedLanguage, languageOptions);
               // 初始化页面标题
               initializeLanguage();
-              
+
               // 语言选择点击事件 - 实现标题切换功能
               document.body.addEventListener("click", (e) => {
-                if (e.target.classList.contains('language-option') || e.target.closest('.language-option')) {
-                  const languageOption = e.target.classList.contains('language-option') ? e.target : e.target.closest('.language-option');
+                if (
+                  e.target.classList.contains("language-option") ||
+                  e.target.closest(".language-option")
+                ) {
+                  const languageOption = e.target.classList.contains(
+                    "language-option"
+                  )
+                    ? e.target
+                    : e.target.closest(".language-option");
                   const language = languageOption.dataset.language;
-                  
+
                   // 保存语言设置到本地存储
                   localStorage.setItem("preferredLanguage", language);
-                  
+
                   // 更新UI选择状态
                   updateLanguageSelection(language, languageOptions);
-                  
+
                   // 更新页面标题
                   updatePageTitle(language);
-                  
+
                   // 更新页面所有翻译元素
                   updatePageTranslations(language);
-                  
+
                   // 显示临时通知
                   const notification = document.createElement("div");
-                  const languageName = language === 'zh-CN' ? 
-                    globalTranslations[language]['simplifiedChinese'] : 
-                    globalTranslations[language]['english'];
-                  notification.textContent = globalTranslations[language]['languageSetTo'].replace('%s', languageName);
+                  const languageName =
+                    language === "zh-CN"
+                      ? globalTranslations[language]["simplifiedChinese"]
+                      : globalTranslations[language]["english"];
+                  notification.textContent = globalTranslations[language][
+                    "languageSetTo"
+                  ].replace("%s", languageName);
                   notification.style.position = "fixed";
                   notification.style.top = "20px";
                   notification.style.left = "50%";
@@ -634,47 +718,64 @@
               <h3 data-i18n="dataManagement">数据管理</h3>
             </div>
             <div class="settings-card-content">
-              <p style="
-                margin-bottom: 20px;
-                color: var(--text-color);
-                line-height: 1.6;
-              " data-i18n="dataManagementDescription">
+              <p
+                style="
+                  margin-bottom: 20px;
+                  color: var(--text-color);
+                  line-height: 1.6;
+                "
+                data-i18n="dataManagementDescription"
+              >
                 通过导入/导出功能，您可以备份收藏数据或与其他浏览器收藏夹进行同步。
               </p>
-              <div style="
-                display: flex;
-                gap: 15px;
-                margin-bottom: 15px;
-                flex-wrap: wrap;
-              ">
-                <button id="importBtn" style="
-                  background-color: var(--primary-color);
-                  color: white;
-                  border: none;
-                  padding: 10px 20px;
-                  border-radius: 8px;
-                  cursor: pointer;
-                  font-size: 14px;
-                  font-weight: 500;
-                  transition: all 0.3s ease;
-                  min-width: 120px;
-                " data-i18n="importFavoritesBtn">导入收藏夹</button>
-                <button id="exportBtn" style="
-                  background-color: var(--accent-color);
-                  color: white;
-                  border: none;
-                  padding: 10px 20px;
-                  border-radius: 8px;
-                  cursor: pointer;
-                  font-size: 14px;
-                  font-weight: 500;
-                  transition: all 0.3s ease;
-                  min-width: 120px;
-                " data-i18n="exportFavoritesBtn">导出收藏夹</button>
+              <div
+                style="
+                  display: flex;
+                  gap: 15px;
+                  margin-bottom: 15px;
+                  flex-wrap: wrap;
+                "
+              >
+                <button
+                  id="importBtn"
+                  style="
+                    background-color: var(--primary-color);
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    min-width: 120px;
+                  "
+                  data-i18n="importFavoritesBtn"
+                >
+                  导入收藏夹
+                </button>
+                <button
+                  id="exportBtn"
+                  style="
+                    background-color: var(--accent-color);
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    min-width: 120px;
+                  "
+                  data-i18n="exportFavoritesBtn"
+                >
+                  导出收藏夹
+                </button>
               </div>
             </div>
           </div>
-          
+
           <!-- 数据管理脚本 -->
           <script>
             // 导入按钮点击事件
@@ -694,34 +795,46 @@
               <h3 data-i18n="privacyPolicy">隐私政策</h3>
             </div>
             <div class="settings-card-content">
-              <p style="
-                margin-bottom: 20px;
-                color: var(--text-color);
-                line-height: 1.6;
-              " data-i18n="privacyPolicyDescription">
+              <p
+                style="
+                  margin-bottom: 20px;
+                  color: var(--text-color);
+                  line-height: 1.6;
+                "
+                data-i18n="privacyPolicyDescription"
+              >
                 查看本应用如何保护您的隐私和处理您的数据。
               </p>
-              <button id="privacyPolicyBtn" style="
-                background-color: var(--primary-color);
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 500;
-                transition: all 0.3s ease;
-                min-width: 120px;
-              " data-i18n="privacyPolicy">查看隐私政策</button>
+              <button
+                id="privacyPolicyBtn"
+                style="
+                  background-color: var(--primary-color);
+                  color: white;
+                  border: none;
+                  padding: 10px 20px;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  font-size: 14px;
+                  font-weight: 500;
+                  transition: all 0.3s ease;
+                  min-width: 120px;
+                "
+                data-i18n="privacyPolicy"
+              >
+                查看隐私政策
+              </button>
             </div>
           </div>
-          
+
           <!-- 隐私政策脚本 -->
           <script>
             // 隐私政策按钮点击事件
-            document.getElementById("privacyPolicyBtn").addEventListener("click", () => {
-              ipcRenderer.send("open-privacy-policy");
-            });
+            document.getElementById("privacyPolicyBtn").addEventListener(
+              "click",
+              () => {
+                ipcRenderer.send("open-privacy-policy");
+              }
+            );
           </script>
 
           <!-- 导入导出功能通知组件 -->
@@ -739,11 +852,11 @@
               color: white;
               font-weight: bold;
               background-color: var(--primary-color);
-              box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
               animation: slideIn 0.3s ease-out;
             "
           ></div>
-          
+
           <style>
             /* 卡片样式 */
             .settings-card {
@@ -755,37 +868,41 @@
               border: 1px solid var(--border-color);
               transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
-            
+
             .settings-card:hover {
               transform: translateY(-2px);
               box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             }
-            
+
             .settings-card-header {
-              background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1) 0%, rgba(var(--primary-rgb), 0.05) 100%);
+              background: linear-gradient(
+                135deg,
+                rgba(var(--primary-rgb), 0.1) 0%,
+                rgba(var(--primary-rgb), 0.05) 100%
+              );
               padding: 16px 20px;
               border-bottom: 1px solid var(--border-color);
             }
-            
+
             .settings-card-header h3 {
               margin: 0;
               color: var(--primary-color);
               font-size: 18px;
               font-weight: 600;
             }
-            
+
             .settings-card-content {
               padding: 20px;
             }
-            
+
             .settings-item {
               margin-bottom: 20px;
             }
-            
+
             .settings-item:last-child {
               margin-bottom: 0;
             }
-            
+
             .settings-label {
               display: block;
               margin-bottom: 8px;
@@ -793,16 +910,16 @@
               font-weight: 500;
               font-size: 14px;
             }
-            
+
             /* 按钮悬停效果 */
             button:hover {
               filter: brightness(1.05);
             }
-            
+
             button:active {
               transform: scale(0.98);
             }
-            
+
             /* 通知动画 */
             @keyframes slideIn {
               from {
@@ -817,51 +934,129 @@
           </style>
 
           <!-- 支持与捐赠 -->
-          <div class="settings-item" style="margin-bottom: 2rem;">
-            <h3 style="margin-bottom: 15px; color: var(--primary-color); font-size: 1.2rem; font-weight: 600;" data-i18n="supportAndDonation">支持与捐赠</h3>
-            <div class="donation-section" style="
-              background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05) 0%, rgba(var(--primary-rgb), 0.1) 100%);
-              border: 2px solid rgba(var(--primary-rgb), 0.2);
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.1);
-            ">
-              <p style="margin-bottom: 15px; font-size: 1rem; line-height: 1.6; color: var(--text-color);" data-i18n="donationDesc1">
+          <div class="settings-item" style="margin-bottom: 2rem">
+            <h3
+              style="
+                margin-bottom: 15px;
+                color: var(--primary-color);
+                font-size: 1.2rem;
+                font-weight: 600;
+              "
+              data-i18n="supportAndDonation"
+            >
+              支持与捐赠
+            </h3>
+            <div
+              class="donation-section"
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(var(--primary-rgb), 0.05) 0%,
+                  rgba(var(--primary-rgb), 0.1) 100%
+                );
+                border: 2px solid rgba(var(--primary-rgb), 0.2);
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.1);
+              "
+            >
+              <p
+                style="
+                  margin-bottom: 15px;
+                  font-size: 1rem;
+                  line-height: 1.6;
+                  color: var(--text-color);
+                "
+                data-i18n="donationDesc1"
+              >
                 收藏夹记事本是一款完全免费的开源软件，我们致力于为用户提供最好的收藏管理体验。
               </p>
-              <p style="margin-bottom: 20px; font-size: 1rem; line-height: 1.6; color: var(--text-color);" data-i18n="donationDesc2">
-                <strong style="color: var(--primary-color);">如果您觉得这款软件对您有所帮助，并且经济条件允许，欢迎通过以下方式支持开发者，您的每一份支持都是我们继续开发和改进的动力！</strong>
+              <p
+                style="
+                  margin-bottom: 20px;
+                  font-size: 1rem;
+                  line-height: 1.6;
+                  color: var(--text-color);
+                "
+                data-i18n="donationDesc2"
+              >
+                <strong style="color: var(--primary-color)"
+                  >如果您觉得这款软件对您有所帮助，并且经济条件允许，欢迎通过以下方式支持开发者，您的每一份支持都是我们继续开发和改进的动力！</strong
+                >
               </p>
 
-              <div style="text-align: center; margin: 30px 0; background-color: var(--card-color); padding: 20px; border-radius: 8px; border: 1px dashed var(--accent-color);">
-                <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--accent-color); font-size: 1.1rem;" data-i18n="supportProject">
+              <div
+                style="
+                  text-align: center;
+                  margin: 30px 0;
+                  background-color: var(--card-color);
+                  padding: 20px;
+                  border-radius: 8px;
+                  border: 1px dashed var(--accent-color);
+                "
+              >
+                <h4
+                  style="
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    color: var(--accent-color);
+                    font-size: 1.1rem;
+                  "
+                  data-i18n="supportProject"
+                >
                   💖 支持项目发展 💖
                 </h4>
-                <p style="margin-bottom: 20px; font-size: 1rem;" data-i18n="githubInfo">
+                <p
+                  style="margin-bottom: 20px; font-size: 1rem"
+                  data-i18n="githubInfo"
+                >
                   您可以访问我们的 GitHub 项目主页，了解更多捐赠方式和项目信息：
                 </p>
-                <button id="githubBtn" style="
-                  padding: 12px 24px;
-                  background-color: var(--accent-color);
-                  color: white;
-                  border: none;
-                  border-radius: 8px;
-                  cursor: pointer;
-                  font-size: 1rem;
-                  font-weight: 600;
-                  transition: all 0.3s ease;
-                  min-width: 180px;
-                " data-i18n="visitGithubProject">
+                <button
+                  id="githubBtn"
+                  style="
+                    padding: 12px 24px;
+                    background-color: var(--accent-color);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    min-width: 180px;
+                  "
+                  data-i18n="visitGithubProject"
+                >
                   访问 GitHub 项目
                 </button>
               </div>
 
-              <div style="background-color: rgba(var(--primary-rgb), 0.1); border-left: 4px solid var(--primary-color); padding: 15px; border-radius: 0 6px 6px 0; margin-top: 20px;">
-                <p style="margin-bottom: 10px; font-size: 0.95rem;" data-i18n="donationMethodsInfo">
+              <div
+                style="
+                  background-color: rgba(var(--primary-rgb), 0.1);
+                  border-left: 4px solid var(--primary-color);
+                  padding: 15px;
+                  border-radius: 0 6px 6px 0;
+                  margin-top: 20px;
+                "
+              >
+                <p
+                  style="margin-bottom: 10px; font-size: 0.95rem"
+                  data-i18n="donationMethodsInfo"
+                >
                   我们的所有捐赠方式都已整合到 GitHub 项目页面中。如果您想支持我们的开发工作，
                   请通过上方按钮访问 GitHub 项目主页，在那里您可以找到包括支付宝在内的多种捐赠方式。
                 </p>
-                <p style="text-align: center; margin-top: 15px; font-weight: 500; color: var(--primary-color);" data-i18n="thankYouSupport">
+                <p
+                  style="
+                    text-align: center;
+                    margin-top: 15px;
+                    font-weight: 500;
+                    color: var(--primary-color);
+                  "
+                  data-i18n="thankYouSupport"
+                >
                   感谢您的支持，您的每一份鼓励都是我们前进的动力！
                 </p>
               </div>
@@ -878,7 +1073,9 @@
             });
           </script>
           <div class="settings-item">
-            <button id="aboutBtn" class="save-btn" data-i18n="aboutDeveloper">关于开发者</button>
+            <button id="aboutBtn" class="save-btn" data-i18n="aboutDeveloper">
+              关于开发者
+            </button>
             <script>
               document.getElementById("aboutBtn").addEventListener("click", () => {
                 ipcRenderer.send("open-about-window");
@@ -930,7 +1127,9 @@
         button.style.marginLeft = "8px";
         button.style.height = "32px";
         button.style.fontSize = "14px";
-        button.innerHTML = globalTranslations[getCurrentLanguage()]['action'] + ' <span class="ActionMenu-caret"></span>';
+        button.innerHTML =
+          globalTranslations[getCurrentLanguage()]["action"] +
+          ' <span class="ActionMenu-caret"></span>';
         container.appendChild(button);
 
         // 创建下拉菜单
@@ -1051,7 +1250,12 @@
       }
 
       function deleteFavorite(index) {
-        if (!confirm(globalTranslations[getCurrentLanguage()]['confirmDeleteFavorite'])) return;
+        if (
+          !confirm(
+            globalTranslations[getCurrentLanguage()]["confirmDeleteFavorite"]
+          )
+        )
+          return;
         ipcRenderer.send("delete-favorite", index);
       }
 
@@ -1070,12 +1274,16 @@
 
       window.editEpisodes = function (index) {
         if (!window.favorites || !Array.isArray(window.favorites)) {
-          alert(globalTranslations[getCurrentLanguage()]['favoriteDataNotLoaded']);
+          alert(
+            globalTranslations[getCurrentLanguage()]["favoriteDataNotLoaded"]
+          );
           return;
         }
         const item = window.favorites[index];
         if (!item) {
-          alert(globalTranslations[getCurrentLanguage()]['cannotFindFavoriteItem']);
+          alert(
+            globalTranslations[getCurrentLanguage()]["cannotFindFavoriteItem"]
+          );
           return;
         }
 
@@ -1091,7 +1299,11 @@
                 ? downloaded
                 : 0;
             if (downloadedNum > totalNum) {
-              alert(globalTranslations[getCurrentLanguage()]['downloadedEpisodesCannotExceedTotal']);
+              alert(
+                globalTranslations[getCurrentLanguage()][
+                  "downloadedEpisodesCannotExceedTotal"
+                ]
+              );
               return;
             }
             item.totalEpisodes = totalNum;
@@ -1101,7 +1313,9 @@
           })
           .catch((err) => {
             console.error("Error editing episodes:", err);
-            alert(globalTranslations[getCurrentLanguage()]['editEpisodesError']);
+            alert(
+              globalTranslations[getCurrentLanguage()]["editEpisodesError"]
+            );
           });
       };
 
@@ -1144,10 +1358,12 @@
         const hasNewItems = favorites.some((item) => item.isNew);
 
         if (favorites.length === 0) {
-          downloadingList.innerHTML =
-            `<div class="empty-tip">${globalTranslations[getCurrentLanguage()]['dataEmptyAddFavorite']}</div>`;
-          downloadedList.innerHTML =
-            `<div class="empty-tip">${globalTranslations[getCurrentLanguage()]['noDownloadedItems']}</div>`;
+          downloadingList.innerHTML = `<div class="empty-tip">${
+            globalTranslations[getCurrentLanguage()]["dataEmptyAddFavorite"]
+          }</div>`;
+          downloadedList.innerHTML = `<div class="empty-tip">${
+            globalTranslations[getCurrentLanguage()]["noDownloadedItems"]
+          }</div>`;
           return;
         } else {
           const newItemIndex = favorites.findIndex((item) => item.isNew);
@@ -1170,133 +1386,145 @@
             const titleSpan = document.createElement("span");
             titleSpan.style.flex = "1";
             titleSpan.style.wordBreak = "break-all";
-            
+
             // 检查URL是否属于优酷视频
             let isYoukuVideo = false;
             let isBilibiliVideo = false;
             let isBaiduDisk = false;
             let isAliyunDrive = false;
-            
+
             try {
               const itemUrl = new URL(item.url);
               const domain = itemUrl.hostname;
-              isYoukuVideo = domain.includes('youku.com');
-              isBilibiliVideo = domain.includes('bilibili.com');
-              isBaiduDisk = domain.includes('baidudisk.com') || domain.includes('pan.baidu.com');
-              isAliyunDrive = domain.includes('aliyundrive.com') || domain.includes('alipan.com');
-            }
-            catch (e) {
+              isYoukuVideo = domain.includes("youku.com");
+              isBilibiliVideo = domain.includes("bilibili.com");
+              isBaiduDisk =
+                domain.includes("baidudisk.com") || domain.includes("pan.baidu.com");
+              isAliyunDrive =
+                domain.includes("aliyundrive.com") || domain.includes("alipan.com");
+            } catch (e) {
               // 无效URL，默认为非视频平台
             }
-            
+
             // 为置顶项和优酷视频添加标记
             let displayTitle = title;
-            
+
             // 清空标题容器，准备重新构建
-            titleSpan.textContent = '';
-            
+            titleSpan.textContent = "";
+
             // 1. 先添加置顶标记（最左侧）
             if (item.pinToTop) {
-              const pinIcon = document.createTextNode('📌 ');
+              const pinIcon = document.createTextNode("📌 ");
               titleSpan.appendChild(pinIcon);
             }
-            
+
             // 2. 然后添加优酷图标
             if (isYoukuVideo) {
-              const youkuIcon = document.createElement('img');
-              youkuIcon.src = './assets/images/youku-100.png';
-              youkuIcon.style.width = '20px';
-              youkuIcon.style.height = '20px';
-              youkuIcon.style.marginRight = '5px';
-              youkuIcon.style.verticalAlign = 'middle';
+              const youkuIcon = document.createElement("img");
+              youkuIcon.src = "./assets/images/youku-100.png";
+              youkuIcon.style.width = "20px";
+              youkuIcon.style.height = "20px";
+              youkuIcon.style.marginRight = "5px";
+              youkuIcon.style.verticalAlign = "middle";
               titleSpan.appendChild(youkuIcon);
             }
-            
+
             // 添加B站图标
             if (isBilibiliVideo) {
-              const bilibiliIcon = document.createElement('img');
-              bilibiliIcon.src = './assets/images/bilibili-100.png';
-              bilibiliIcon.style.width = '20px';
-              bilibiliIcon.style.height = '20px';
-              bilibiliIcon.style.marginRight = '5px';
-              bilibiliIcon.style.verticalAlign = 'middle';
+              const bilibiliIcon = document.createElement("img");
+              bilibiliIcon.src = "./assets/images/bilibili-100.png";
+              bilibiliIcon.style.width = "20px";
+              bilibiliIcon.style.height = "20px";
+              bilibiliIcon.style.marginRight = "5px";
+              bilibiliIcon.style.verticalAlign = "middle";
               titleSpan.appendChild(bilibiliIcon);
             }
-            
+
             // 添加百度网盘图标
             if (isBaiduDisk) {
-              const baiduDiskIcon = document.createElement('img');
-              baiduDiskIcon.src = './assets/images/baidudisk-100.png';
-              baiduDiskIcon.style.width = '20px';
-              baiduDiskIcon.style.height = '20px';
-              baiduDiskIcon.style.marginRight = '5px';
-              baiduDiskIcon.style.verticalAlign = 'middle';
+              const baiduDiskIcon = document.createElement("img");
+              baiduDiskIcon.src = "./assets/images/baidudisk-100.png";
+              baiduDiskIcon.style.width = "20px";
+              baiduDiskIcon.style.height = "20px";
+              baiduDiskIcon.style.marginRight = "5px";
+              baiduDiskIcon.style.verticalAlign = "middle";
               titleSpan.appendChild(baiduDiskIcon);
             }
-            
+
             // 添加阿里云网盘图标
             if (isAliyunDrive) {
-              const aliyunDriveIcon = document.createElement('img');
-              aliyunDriveIcon.src = './assets/images/aliyundrive-100.png';
-              aliyunDriveIcon.style.width = '20px';
-              aliyunDriveIcon.style.height = '20px';
-              aliyunDriveIcon.style.marginRight = '5px';
-              aliyunDriveIcon.style.verticalAlign = 'middle';
+              const aliyunDriveIcon = document.createElement("img");
+              aliyunDriveIcon.src = "./assets/images/aliyundrive-100.png";
+              aliyunDriveIcon.style.width = "20px";
+              aliyunDriveIcon.style.height = "20px";
+              aliyunDriveIcon.style.marginRight = "5px";
+              aliyunDriveIcon.style.verticalAlign = "middle";
               titleSpan.appendChild(aliyunDriveIcon);
             }
-            
+
             // 3. 最后添加标题文本
             const titleText = document.createTextNode(displayTitle);
             titleSpan.appendChild(titleText);
-            
+
             itemElement.appendChild(titleSpan);
 
             const episodeBtn = document.createElement("button");
             episodeBtn.className = "btn episode-btn";
             episodeBtn.style.height = "32px";
             episodeBtn.style.fontSize = "14px";
-            
+
             // 检查URL是否属于视频平台
             // 在浏览器环境中直接实现检查逻辑，避免模块导入问题
             let isVideoPlatform = false;
             try {
               // 知名视频平台域名列表
               const videoPlatforms = [
-                'v.qq.com', // 腾讯视频
-                'www.bilibili.com', // Bilibili
-                'www.iqiyi.com', // 爱奇艺
-                'youku.com', // 优酷
-                'mgtv.com', // 芒果TV
-                'sohu.com', // 搜狐视频
-                'le.com' // 乐视视频
+                "v.qq.com", // 腾讯视频
+                "www.bilibili.com", // Bilibili
+                "www.iqiyi.com", // 爱奇艺
+                "youku.com", // 优酷
+                "mgtv.com", // 芒果TV
+                "sohu.com", // 搜狐视频
+                "le.com", // 乐视视频
               ];
-              
+
               const url = new URL(item.url);
               const domain = url.hostname;
-              isVideoPlatform = videoPlatforms.some(platform => domain.includes(platform));
+              isVideoPlatform = videoPlatforms.some((platform) =>
+                domain.includes(platform)
+              );
             } catch (e) {
               // 无效URL，默认为非视频平台
             }
-            
+
             // 根据是否为视频平台选择显示文本
-            const dlLabelShort = isVideoPlatform ? 
-              (globalTranslations[getCurrentLanguage()]['watchedLabelShort'] || '观看:') : 
-              (globalTranslations[getCurrentLanguage()]['downloadedLabelShort'] || '下载:');
-            const fullyDLText = isVideoPlatform ? 
-              (globalTranslations[getCurrentLanguage()]['fullyWatched'] || '已观看') : 
-              (globalTranslations[getCurrentLanguage()]['fullyDownloaded'] || '已下载');
-            const dlEpisodesShort = isVideoPlatform ? 
-              (globalTranslations[getCurrentLanguage()]['watchedLabelShort'] || '观看:') : 
-              (globalTranslations[getCurrentLanguage()]['downloadedEpisodesShort'] || '已下载:');
-            
+            const dlLabelShort = isVideoPlatform
+              ? globalTranslations[getCurrentLanguage()]["watchedLabelShort"] ||
+                "观看:"
+              : globalTranslations[getCurrentLanguage()]["downloadedLabelShort"] ||
+                "下载:";
+            const fullyDLText = isVideoPlatform
+              ? globalTranslations[getCurrentLanguage()]["fullyWatched"] || "已观看"
+              : globalTranslations[getCurrentLanguage()]["fullyDownloaded"] || "已下载";
+            const dlEpisodesShort = isVideoPlatform
+              ? globalTranslations[getCurrentLanguage()]["watchedLabelShort"] ||
+                "观看:"
+              : globalTranslations[getCurrentLanguage()][
+                  "downloadedEpisodesShort"
+                ] || "已下载:";
+
             episodeBtn.textContent =
               (item.totalEpisodes || 0) === 0
                 ? (item.downloadedEpisodes || 0) === 0
-                  ? globalTranslations[getCurrentLanguage()]['setEpisodes']
+                  ? globalTranslations[getCurrentLanguage()]["setEpisodes"]
                   : `${dlLabelShort}${item.downloadedEpisodes || 0}`
                 : (item.totalEpisodes || 0) === (item.downloadedEpisodes || 0)
                 ? fullyDLText
-                : `${globalTranslations[getCurrentLanguage()]['totalEpisodesShort']}${item.totalEpisodes || 0} / ${dlEpisodesShort}${item.downloadedEpisodes || 0}`;
+                : `${
+                    globalTranslations[getCurrentLanguage()]["totalEpisodesShort"]
+                  }${item.totalEpisodes || 0} / ${dlEpisodesShort}${
+                    item.downloadedEpisodes || 0
+                  }`;
             episodeBtn.addEventListener("click", async function () {
               const itemIndex = parseInt(
                 this.closest(".favorite-item").dataset.index
@@ -1312,7 +1540,8 @@
             visitBtn.className = "btn visit-btn";
             visitBtn.style.height = "32px";
             visitBtn.style.fontSize = "14px";
-            visitBtn.textContent = globalTranslations[getCurrentLanguage()]['visit'];
+            visitBtn.textContent =
+              globalTranslations[getCurrentLanguage()]["visit"];
             visitBtn.addEventListener("click", () => {
               // 检查是否有openMethod属性，并根据属性值决定打开方式
               if (item.openMethod && item.openMethod === "external") {
@@ -1327,13 +1556,13 @@
 
             const menu = createActionMenu([
               {
-                label: globalTranslations[getCurrentLanguage()]['edit'],
+                label: globalTranslations[getCurrentLanguage()]["edit"],
                 onClick: () => {
                   showEditDialog(originalIndex);
                 },
               },
               {
-                label: globalTranslations[getCurrentLanguage()]['delete'],
+                label: globalTranslations[getCurrentLanguage()]["delete"],
                 onClick: () => deleteFavorite(originalIndex),
               },
             ]);
@@ -1372,17 +1601,17 @@
 
             itemElement.addEventListener("drop", (e) => {
               e.preventDefault();
-              const targetIndex = parseInt(e.target
-                .closest(".favorite-item")
-                .dataset.index);
+              const targetIndex = parseInt(
+                e.target.closest(".favorite-item").dataset.index
+              );
               const fromIndex = parseInt(draggedIndex);
-              
+
               if (fromIndex !== targetIndex) {
                 // 移除被拖动的项目
                 const draggedItem = favorites.splice(fromIndex, 1)[0];
                 // 在目标位置插入被拖动的项目
                 favorites.splice(targetIndex, 0, draggedItem);
-                
+
                 ipcRenderer.send("update-favorites-order", favorites);
                 renderFavorites(favorites);
               }
@@ -1399,12 +1628,14 @@
           });
 
           if (downloadingList.children.length === 0) {
-            downloadingList.innerHTML =
-                `<div class="empty-tip">${globalTranslations[getCurrentLanguage()]['noDownloadingItems']}</div>`;
+            downloadingList.innerHTML = `<div class="empty-tip">${
+              globalTranslations[getCurrentLanguage()]["noDownloadingItems"]
+            }</div>`;
           }
           if (downloadedList.children.length === 0) {
-            downloadedList.innerHTML =
-                `<div class="empty-tip">${globalTranslations[getCurrentLanguage()]['noDownloadedItems']}</div>`;
+            downloadedList.innerHTML = `<div class="empty-tip">${
+              globalTranslations[getCurrentLanguage()]["noDownloadedItems"]
+            }</div>`;
           }
 
           document.querySelectorAll(".tab-btn").forEach((btn) =>
@@ -1488,7 +1719,9 @@
           : "none";
 
         favorites.forEach((favorite) => {
-          const title = favorite.querySelector("span").textContent.toLowerCase();
+          const title = favorite
+            .querySelector("span")
+            .textContent.toLowerCase();
           const shouldShow = !hasSearchTerm || title.includes(searchTerm);
           favorite.style.display = shouldShow ? "flex" : "none";
         });
@@ -1517,7 +1750,9 @@
 
       // 处理导入导出通知
       ipcRenderer.on("import-export-notification", (event, data) => {
-        const notification = document.getElementById("importExportNotification");
+        const notification = document.getElementById(
+          "importExportNotification"
+        );
 
         // 设置通知样式和内容
         notification.style.display = "block";

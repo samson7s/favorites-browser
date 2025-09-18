@@ -162,17 +162,18 @@
             const confirmBtn = document.getElementById('confirmBtn');
             const cancelBtn = document.getElementById('cancelBtn');
 
-            // 接收初始值（虽然添加对话框不需要，但保持结构一致）
-            ipcRenderer.on('set-edit-values', (event, { title, url, index }) => {
-                titleInput.value = title || '';
-                urlInput.value = url || '';
-            });
+            // 因添加对话框不需要接收初始值，移除相关代码
+            // ipcRenderer.on('set-edit-values', (event, { title, url, index }) => {
+            //     titleInput.value = title || '';
+            //     urlInput.value = url || '';
+            // });
 
-            ipcRenderer.on('edit-dialog-error', (event, { field, message }) => {
-                const errorElement = document.getElementById(`${field}-error`);
-                errorElement.textContent = message;
-                errorElement.style.display = 'block';
-            });
+            // 未发现使用该监听的逻辑，移除相关代码
+            // ipcRenderer.on('edit-dialog-error', (event, { field, message }) => {
+            //     const errorElement = document.getElementById(`${field}-error`);
+            //     errorElement.textContent = message;
+            //     errorElement.style.display = 'block';
+            // });
 
             cancelBtn.addEventListener('click', () => {
                 window.close();
@@ -224,81 +225,15 @@
                         if (pinToTopCheckbox && typeof pinToTopCheckbox.checked !== 'undefined') {
                             pinToTop = pinToTopCheckbox.checked;
                         }
-                        
-                        // 处理视频平台URL，提取集数信息作为downloadedEpisodes
-                        let downloadedEpisodes = 0; // 默认值为0
-                        
-                        // 首先检查URL是否属于视频平台
-                        if (isVideoPlatformUrl(url)) {
-                            // 然后检查是否是优酷视频
-                            try {
-                                const parsedUrl = new URL(url);
-                                const domain = parsedUrl.hostname;
-                                
-                                if (domain.includes('youku.com')) {
-                                    // 优酷视频：检查是否有spm参数
-                                    const searchParams = parsedUrl.searchParams;
-                                    if (searchParams.has('spm')) {
-                                        try {
-                                            const spmValue = searchParams.get('spm');
-                                            if (spmValue && typeof spmValue === 'string') {
-                                                // 寻找包含'd_'的部分，例如'd_1_2'
-                                                const spmParts = spmValue.split('.');
-                                                // 过滤出包含'd_'的部分
-                                                const dPart = spmParts.find(part => part.startsWith('d_'));
-                                                 
-                                                if (dPart) {
-                                                    // 解析d_1_2格式，提取集数（第二个数字）
-                                                    const dParts = dPart.split('_');
-                                                    if (dParts.length >= 3) {
-                                                        const episodeNumber = dParts[2];
-                                                        // 确保集数是有效的数字
-                                                        if (episodeNumber && !isNaN(episodeNumber) && isFinite(episodeNumber) && parseInt(episodeNumber) > 0) {
-                                                            downloadedEpisodes = parseInt(episodeNumber);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        } catch (e) {
-                                            console.error('解析优酷URL的spm参数时出错:', e);
-                                            // 出错时保持默认值0
-                                        }
-                                    }
-                                } else if (domain.includes('www.bilibili.com')) {
-                                    // Bilibili视频：检查是否有p参数
-                                    const searchParams = parsedUrl.searchParams;
-                                    if (searchParams.has('p')) {
-                                        try {
-                                            const pValue = searchParams.get('p');
-                                            // 确保集数是有效的数字
-                                            if (pValue && !isNaN(pValue) && isFinite(pValue) && parseInt(pValue) > 0) {
-                                                downloadedEpisodes = parseInt(pValue);
-                                            }
-                                        } catch (e) {
-                                            console.error('解析B站URL的p参数时出错:', e);
-                                            // 出错时保持默认值0
-                                        }
-                                    }
-                                }
-                                // 可以在这里添加其他视频平台的集数提取逻辑
-                            } catch (e) {
-                                console.error('解析URL时出错:', e);
-                                // 出错时保持默认值0
-                            }
-                        }
-                        
-                        // 确保downloadedEpisodes是有效的数字
-                        if (isNaN(downloadedEpisodes) || !isFinite(downloadedEpisodes) || downloadedEpisodes < 0) {
-                            downloadedEpisodes = 0;
-                        }
 
                         ipcRenderer.send('add-favorite-confirm', {
                             title: finalTitle,
                             url,
                             openMethod,
                             pinToTop,
-                            downloadedEpisodes: downloadedEpisodes, // 添加已下载集数信息
-                            urlType: 'video' // 默认添加urlType: video作为备用参数
+                            // 移除未使用到的相关函数及逻辑
+                            // downloadedEpisodes: downloadedEpisodes,
+                            // urlType: 'video'
                         });
                         window.close();
                     }

@@ -94,8 +94,6 @@ body {
   line-height: 1.4;
 }
 
-
-
 /* 广告拦截按钮样式 */
 #adBlockBtn {
   position: relative;
@@ -182,8 +180,26 @@ body {
 
 /* 确保所有设置项的样式一致 */
 .settings-item {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   clear: both;
+}
+
+.settings-item label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--text-color);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.settings-item select {
+  width: 100%;
+  max-width: 250px;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 3px;
+  font-size: 11px;
+  transition: border-color 0.3s ease;
 }
 
 /* 捐赠部分特别调整，避免溢出 */
@@ -228,28 +244,6 @@ body {
 .settings-view .container {
   scrollbar-width: auto;
   scrollbar-color: var(--primary-color) var(--background-color);
-}
-
-.settings-item {
-  margin-bottom: 1.5rem;
-}
-
-.settings-item label {
-  display: block;
-  margin-bottom: 0.35rem;
-  color: var(--text-color);
-  font-weight: 500;
-  font-size: 12px;
-}
-
-.settings-item select {
-  width: 100%;
-  max-width: 250px;
-  padding: 0.375rem 0.625rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 3px;
-  font-size: 11px;
-  transition: border-color 0.3s ease;
 }
 
 .theme-selector {

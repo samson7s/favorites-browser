@@ -36,34 +36,55 @@
       ipcRenderer.on('favorites-updated', (event, favorites) => {
         const list = document.getElementById('favorites-list');
         const currentLanguage = getCurrentLanguage();
-        list.innerHTML = favorites
-          .map((item, index) => {
-            // 确保item是对象，并且有title和url属性
-            const itemTitle = item && typeof item === 'object' && item.title ? item.title : (typeof item === 'string' ? item : '未知收藏项');
-            const itemUrl = item && typeof item === 'object' && item.url ? item.url : '';
-            return `
+        list.innerHTML = favorites.map((item, index) => {
+          // 确保item是对象，并且有title和url属性
+          const itemTitle = item && typeof item === 'object' && item.title 
+            ? item.title 
+            : (typeof item === 'string' ? item : '未知收藏项');
+          const itemUrl = item && typeof item === 'object' && item.url ? item.url : '';
+
+          const episodeInfo = item && typeof item === 'object' 
+            && item.downloadedEpisodes !== undefined 
+            && item.totalEpisodes !== undefined
+            ? `<div style="font-size: 0.8rem; margin-bottom: 0.5rem;">已下载: ${item.downloadedEpisodes}/${item.totalEpisodes}集</div>`
+            : '';
+
+          return `
             <li style="padding: 0.8rem 1rem; margin: 0.5rem 0; background: var(--secondary-color); border-radius: 6px; color: var(--text-color);">
               <div style="font-weight: bold; margin-bottom: 0.3rem;">${itemTitle}</div>
               <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 0.5rem; word-break: break-all;">${itemUrl}</div>
-              ${item && typeof item === 'object' && item.downloadedEpisodes !== undefined && item.totalEpisodes !== undefined ? `
-              <div style="font-size: 0.8rem; margin-bottom: 0.5rem;">已下载: ${item.downloadedEpisodes}/${item.totalEpisodes}集</div>
-              ` : ''}
-              <button onclick="showEditDialog(${index})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; background: var(--primary-color); color: var(--text-color); border: none; margin-right: 0.5rem;">${globalTranslations[currentLanguage]['edit'] || '编辑'}</button>
-              <button onclick="deleteFavorite(${index})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; background: var(--error-color); color: var(--text-color); border: none;">${globalTranslations[currentLanguage]['delete'] || '删除'}</button>
+              ${episodeInfo}
+              <button 
+                onclick="showEditDialog(${index})" 
+                style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; background: var(--primary-color); color: var(--text-color); border: none; margin-right: 0.5rem;"
+              >
+                ${globalTranslations[currentLanguage]['edit'] || '编辑'}
+              </button>
+              <button 
+                onclick="deleteFavorite(${index})" 
+                style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 4px; background: var(--error-color); color: var(--text-color); border: none;"
+              >
+                ${globalTranslations[currentLanguage]['delete'] || '删除'}
+              </button>
             </li>
-            `;
-          })
-          .join('');
+          `;
+        }).join('');
       });
     </script>
   </head>
-  <body onload="loadFavorites()" style="background-color: var(--background-color); margin: 0; padding: 1rem;">
+  <body 
+    onload="loadFavorites()" 
+    style="background-color: var(--background-color); margin: 0; padding: 1rem;"
+  >
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeLanguage();
-        });
+      document.addEventListener('DOMContentLoaded', function() {
+        initializeLanguage();
+      });
     </script>
-    <h1 style="color: var(--primary-color);" data-i18n="bookmarkList"></h1>
+    <h1 
+      style="color: var(--primary-color);" 
+      data-i18n="bookmarkList"
+    ></h1>
     <button
       onclick="addFavorite()"
       data-i18n="addFavorite"

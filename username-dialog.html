@@ -105,7 +105,7 @@
             }
 
             .confirm-btn:hover {
-                background-color: var(--primary-hover-color) !important;
+                background-color: var(--primary-hover-color);
                 color: var(--button-text-light);
                 transform: translateY(-1px);
                 box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.4);
@@ -120,20 +120,6 @@
         </style>
     </head>
     <body>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                initializeLanguage();
-                initializeTheme();
-            });
-
-            // 初始化主题设置
-            function initializeTheme() {
-                // 从localStorage获取主题设置，如果没有则使用默认主题
-                const currentTheme = localStorage.getItem('theme') || 'light';
-                // 将主题应用到document.documentElement
-                document.documentElement.setAttribute('data-theme', currentTheme);
-            }
-        </script>
         <div class="container">
             <div class="form-group">
                 <label for="username" data-i18n="enterUsername"></label>
@@ -147,43 +133,57 @@
         </div>
 
         <script>
-            const { ipcRenderer } = require('electron');
-            const usernameInput = document.getElementById('username');
-            const usernameError = document.getElementById('usernameError');
-            const confirmBtn = document.getElementById('confirmBtn');
-            const cancelBtn = document.getElementById('cancelBtn');
+            // 初始化语言和主题设置
+            document.addEventListener('DOMContentLoaded', function () {
+                initializeLanguage();
+                initializeTheme();
 
-            // 验证用户名
-            function validateUsername() {
-                const username = usernameInput.value.trim();
-                if (!username) {
-                    usernameError.textContent = globalTranslations[getCurrentLanguage()]['usernameCannotBeEmpty'] || '用户名不能为空';
-                    usernameError.style.display = 'block';
-                    return false;
+                const { ipcRenderer } = require('electron');
+                const usernameInput = document.getElementById('username');
+                const usernameError = document.getElementById('usernameError');
+                const confirmBtn = document.getElementById('confirmBtn');
+                const cancelBtn = document.getElementById('cancelBtn');
+
+                // 验证用户名
+                function validateUsername() {
+                    const username = usernameInput.value.trim();
+                    if (!username) {
+                        usernameError.textContent = globalTranslations[getCurrentLanguage()]['usernameCannotBeEmpty'] || '用户名不能为空';
+                        usernameError.style.display = 'block';
+                        return false;
+                    }
+                    usernameError.style.display = 'none';
+                    return true;
                 }
-                usernameError.style.display = 'none';
-                return true;
-            }
 
-            // 确认按钮点击事件
-            confirmBtn.addEventListener('click', () => {
-                if (validateUsername()) {
-                    ipcRenderer.send('username-confirmed', usernameInput.value.trim());
+                // 确认按钮点击事件
+                confirmBtn.addEventListener('click', () => {
+                    if (validateUsername()) {
+                        ipcRenderer.send('username-confirmed', usernameInput.value.trim());
+                        window.close();
+                    }
+                });
+
+                // 取消按钮点击事件
+                cancelBtn.addEventListener('click', () => {
                     window.close();
-                }
+                });
+
+                // 回车提交
+                usernameInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        confirmBtn.click();
+                    }
+                });
             });
 
-            // 取消按钮点击事件
-            cancelBtn.addEventListener('click', () => {
-                window.close();
-            });
-
-            // 回车提交
-            usernameInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    confirmBtn.click();
-                }
-            });
+            // 初始化主题设置
+            function initializeTheme() {
+                // 从localStorage获取主题设置，如果没有则使用默认主题
+                const currentTheme = localStorage.getItem('theme') || 'light';
+                // 将主题应用到document.documentElement
+                document.documentElement.setAttribute('data-theme', currentTheme);
+            }
         </script>
     </body>
 </html>
