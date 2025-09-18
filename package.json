@@ -1,6 +1,6 @@
 {
   "name": "favorites-browser",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "这是一个使用 Electron 构建的 Favorites browser 应用",
   "author": "收藏夹记事本",
   "main": "main.js",

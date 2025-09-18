@@ -24,7 +24,6 @@ electron.zip
 electron.exe
 
 # Package manager files
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 

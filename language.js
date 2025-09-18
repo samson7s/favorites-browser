@@ -74,7 +74,7 @@ globalTranslations = {
     'feature5': '提供简洁直观的用户界面，支持明亮/暗黑主题自定义切换',
     'feature6': '支持OneDrive云盘同步，实现多设备数据互通，随时备份与恢复',
     'feature7': '提供导入导出功能，支持与主流浏览器收藏夹格式兼容',
-    'version': '版本: 1.0.3',
+    'version': '版本: 1.0.4',
     'titleCannotBeEmpty': '标题不能为空',
     'urlCannotBeEmpty': '收藏地址不能为空',
     'invalidUrl': '请输入有效的URL地址',
