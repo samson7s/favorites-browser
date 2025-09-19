@@ -134,10 +134,10 @@
     <body>
         <script>
             // 初始化语言设置
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 initializeLanguage();
             });
-            
+
             // 保存初始URL和集数信息，用于检测URL是否被修改
             let originalUrl = '';
             let savedDownloadedEpisodes = 0;
@@ -194,12 +194,21 @@
             // 接收初始值
             ipcRenderer.on('set-edit-values', (event, data) => {
                 // 解构数据并提供默认值
-                const { title = '', url = '', openMethod = 'internal', pinToTop = false, downloadedEpisodes = 0, totalEpisodes = 0, urlType = '', index } = data || {};
+                const {
+                    title = '',
+                    url = '',
+                    openMethod = 'internal',
+                    pinToTop = false,
+                    downloadedEpisodes = 0,
+                    totalEpisodes = 0,
+                    urlType = '',
+                    index
+                } = data || {};
 
                 titleInput.value = title;
                 urlInput.value = url;
                 itemIndex = index;
-                
+
                 // 保存原始URL和集数信息
                 originalUrl = url;
                 savedDownloadedEpisodes = downloadedEpisodes;
@@ -298,11 +307,11 @@
                         if (pinToTopCheckbox && typeof pinToTopCheckbox.checked !== 'undefined') {
                             pinToTop = pinToTopCheckbox.checked;
                         }
-                           
+
                         // 处理视频平台URL，提取集数信息作为downloadedEpisodes
                         let downloadedEpisodes = 0; // 默认值为0
                         let totalEpisodes = 0; // 默认值为0
-                        
+
                         // 检查URL是否被修改
                         if (url === originalUrl) {
                             // 如果URL未被修改，使用保存的集数信息
@@ -316,7 +325,7 @@
                                 try {
                                     const parsedUrl = new URL(url);
                                     const domain = parsedUrl.hostname;
-                                    
+
                                     if (domain.includes('youku.com')) {
                                         // 优酷视频：检查是否有spm参数
                                         const searchParams = parsedUrl.searchParams;
@@ -328,7 +337,7 @@
                                                     const spmParts = spmValue.split('.');
                                                     // 过滤出包含'd_'的部分
                                                     const dPart = spmParts.find(part => part.startsWith('d_'));
-                                                    
+
                                                     if (dPart) {
                                                         // 解析d_1_2格式，提取集数（第二个数字）
                                                         const dParts = dPart.split('_');
@@ -353,7 +362,7 @@
                                     // 出错时保持默认值0
                                 }
                             }
-                            
+
                             // 确保downloadedEpisodes是有效的数字
                             if (isNaN(downloadedEpisodes) || !isFinite(downloadedEpisodes) || downloadedEpisodes < 0) {
                                 downloadedEpisodes = 0;
@@ -370,7 +379,7 @@
                             index: itemIndex,
                             urlType: savedUrlType || 'video'
                         });
-                        
+
                         // 等待主进程响应，不立即关闭窗口
                     }
                 } catch (error) {
