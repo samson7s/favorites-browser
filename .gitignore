@@ -80,8 +80,3 @@ trash_can/
 *.tar.gz
 *.7z
 *.rar
-
-# Build guide files
-build/*.plist
-build/*.nsh
-build/icons/
