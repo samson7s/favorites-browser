@@ -180,26 +180,78 @@
         const downloadedInput = document.getElementById('downloadedEpisodes');
         let itemIndex;
 
-        // 数字增减按钮逻辑
+        // 数字增减按钮逻辑 - 包含点击和长按功能
+        
+        // 增加/减少数值的函数
+        function updateValue(targetId, step) {
+            const input = document.getElementById(targetId);
+            const currentValue = parseInt(input.value) || 0;
+            let newValue = currentValue + step;
+
+            if (targetId === 'downloadedEpisodes') {
+                const totalValue = parseInt(document.getElementById('totalEpisodes').value) || 0;
+                newValue = Math.max(0, newValue);
+                if (totalValue > 0) {
+                    newValue = Math.min(totalValue, newValue);
+                }
+            } else {
+                newValue = Math.max(0, newValue);
+            }
+
+            input.value = newValue;
+        }
+
+        // 点击功能 - 恢复单击响应
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('number-btn')) {
+            if (e.target.classList.contains('number-btn') && !isLongPress) {
                 const targetId = e.target.dataset.target;
                 const step = parseInt(e.target.dataset.step);
-                const input = document.getElementById(targetId);
-                const currentValue = parseInt(input.value) || 0;
-                let newValue = currentValue + step;
+                updateValue(targetId, step);
+            }
+        });
 
-                if (targetId === 'downloadedEpisodes') {
-                    const totalValue = parseInt(document.getElementById('totalEpisodes').value) || 0;
-                    newValue = Math.max(0, newValue);
-                    if (totalValue > 0) {
-                        newValue = Math.min(totalValue, newValue);
-                    }
-                } else {
-                    newValue = Math.max(0, newValue);
-                }
+        // 长按功能变量
+        let longPressTimer = null;
+        let activeButton = null;
+        let isLongPress = false;
 
-                input.value = newValue;
+        // 长按开始
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('number-btn')) {
+                activeButton = e.target;
+                const targetId = activeButton.dataset.target;
+                const step = parseInt(activeButton.dataset.step);
+                
+                // 设置长按延迟1秒后启动递增/递减
+                longPressTimer = setTimeout(() => {
+                    isLongPress = true;
+                    // 长按开始后，以300毫秒间隔递增/递减
+                    longPressTimer = setInterval(() => {
+                        updateValue(targetId, step);
+                    }, 300);
+                    // 立即更新一次值（长按触发后）
+                    updateValue(targetId, step);
+                }, 1000);
+            }
+        });
+
+        // 长按结束（鼠标释放或离开按钮）
+        function stopLongPress() {
+            if (longPressTimer) {
+                // 同时清理setTimeout和setInterval
+                clearTimeout(longPressTimer);
+                clearInterval(longPressTimer);
+                longPressTimer = null;
+                activeButton = null;
+                isLongPress = false; // 重置长按标志
+            }
+        }
+
+        document.addEventListener('mouseup', stopLongPress);
+        document.addEventListener('mouseleave', (e) => {
+            // 检查鼠标是否离开了按钮区域
+            if (activeButton && !e.target.classList.contains('number-btn')) {
+                stopLongPress();
             }
         });
 
