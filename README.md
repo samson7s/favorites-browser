@@ -21,22 +21,22 @@
 以下是收藏夹记事本的主要界面截图：
 
 ### 主界面截图
-![主界面截图1](assets/images/1.png)
+![主界面截图1](assets/1.png)
 
 ### 分类管理界面
-![分类管理界面](assets/images/2.png)
+![分类管理界面](assets/2.png)
 
 ### 内容详情界面
-![内容详情界面](assets/images/3.png)
+![内容详情界面](assets/3.png)
 
 ### 搜索功能界面
-![搜索功能界面](assets/images/4.png)
+![搜索功能界面](assets/4.png)
 
 ### 设置界面
-![设置界面](assets/images/5.png)
+![设置界面](assets/5.png)
 
 ### 导入导出功能
-![导入导出功能](assets/images/6.png)
+![导入导出功能](assets/6.png)
 
 ## 安装方法
 
@@ -151,8 +151,14 @@ Favorites browser/
 ├── about.html                     # 关于页面
 ├── add-dialog.html                # 添加收藏对话框
 ├── assets/                        # 资源文件目录
-│   ├── alipay-qrcode.png          # 支付宝捐赠二维码
-│   └── images/                    # 图片资源目录
+│   ├── 1.png                      # 应用截图1
+│   ├── 2.png                      # 应用截图2
+│   ├── 3.png                      # 应用截图3
+│   ├── 4.png                      # 应用截图4
+│   ├── 5.png                      # 应用截图5
+│   ├── 6.png                      # 应用截图6
+│   ├── alipay-qrcod.png           # 支付宝捐赠二维码
+│   └── third-party/               # 第三方资源
 ├── build/                         # 构建资源目录
 │   ├── entitlements.mac.plist     # macOS 应用权限配置
 │   ├── icons/                     # 应用图标资源
@@ -228,7 +234,7 @@ Favorites browser/
 
 扫描下方二维码，您可以请开发者喝杯咖啡，表达您的支持和鼓励。
 
-![支付宝捐赠二维码](assets/alipay-qrcode.png)
+![支付宝捐赠二维码](assets/alipay-qrcod.png)
 
 ## 联系方式
 
