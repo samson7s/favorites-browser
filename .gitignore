@@ -15,7 +15,6 @@ node_modules
 # Build outputs
 dist
 dist-ssr
-build
 *.local
 
 # Electron-related large files
